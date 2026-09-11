@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه پیشنهادات ویژه | افیلیت</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; line-height: 1.6; }
+        header { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; padding: 2.5rem 1rem; text-align: center; }
+        header h1 { font-size: 2.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        .top-nav { max-width: 1200px; margin: 1.5rem auto 0; padding: 0 1rem; text-align: left; }
+        .admin-link { background: #1e293b; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
+        
+        .search-filter-box { max-width: 1200px; margin: 1.5rem auto 0; padding: 0 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .search-form { display: flex; gap: 0.5rem; flex: 1; min-width: 280px; }
+        .search-input { flex: 1; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: white; }
+        .search-btn { background: #6366f1; color: white; border: none; padding: 0 1.25rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
+        .search-btn:hover { background: #4f46e5; }
+        
+        .categories-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .cat-chip { background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
+        .cat-chip.active, .cat-chip:hover { background: #6366f1; color: white; border-color: #6366f1; }
+
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .card { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); display: flex; flex-direction: column; justify-content: space-between; }
+        .card-img { width: 100%; height: 160px; object-fit: cover; }
+        .card-img-placeholder { width: 100%; height: 160px; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: bold; }
+        .card-content { padding: 1.5rem; }
+        .badge { display: inline-block; background: #e0e7ff; color: #4338ca; padding: 0.2rem 0.6rem; border-radius: 0.3rem; font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .card-title a { color: #1e293b; text-decoration: none; }
+        .card-title a:hover { color: #6366f1; }
+        .card-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .card-desc { font-size: 0.95rem; color: #64748b; margin-bottom: 1rem; }
+        .card-stats { font-size: 0.85rem; color: #6366f1; margin-bottom: 1.25rem; font-weight: bold; }
+        .btn { display: block; width: 100%; background-color: #10b981; color: white; text-align: center; padding: 0.75rem; border-radius: 0.5rem; text-decoration: none; font-weight: bold; }
+        .btn:hover { background-color: #059669; }
+        
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 3rem; }
+        .page-link { background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: bold; }
+        .page-link.active, .page-link:hover { background: #6366f1; color: white; border-color: #6366f1; }
+
+        .no-result { text-align: center; color: #64748b; grid-column: 1 / -1; padding: 3rem; font-size: 1.1rem; }
+        footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>پیشنهادات و تخفیف‌های ویژه</h1>
+        <p>گلچینی از بهترین محصولات با بالاترین تخفیف‌ها</p>
+    </header>
+
+    <div class="top-nav">
+        <a href="/admin" class="admin-link">ورود به پنل مدیریت</a>
+    </div>
+
+    <div class="search-filter-box">
+        <form class="search-form" method="GET" action="/">
+            <input type="text" name="q" class="search-input" placeholder="جستجوی محصول..." value="{{ search_query }}">
+            {% if selected_category %}<input type="hidden" name="cat" value="{{ selected_category }}">{% endif %}
+            <button type="submit" class="search-btn">جستجو</button>
+        </form>
+        
+        <div class="categories-filter">
+            <a href="/" class="cat-chip {% if not selected_category or selected_category == 'all' %}active{% endif %}">همه</a>
+            {% for cat in categories %}
+            <a href="/?cat={{ cat }}{% if search_query %}&q={{ search_query }}{% endif %}" class="cat-chip {% if selected_category == cat %}active{% endif %}">{{ cat }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            {% if products %}
+                {% for product in products %}
+                <div class="card">
+                    <div>
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="card-img">
+                        {% else %}
+                            <div class="card-img-placeholder">بدون تصویر</div>
+                        {% endif %}
+                        <div class="card-content">
+                            <span class="badge">{{ product.category }}</span>
+                            <h3 class="card-title"><a href="/product/{{ product.slug }}">{{ product.title }}</a></h3>
+                            <p class="card-desc">{{ product.description[:90] }}...</p>
+                            <div class="card-stats">تعداد کلیک: {{ product.clicks }}</div>
+                        </div>
+                    </div>
+                    <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <a href="/go/{{ product.slug }}" class="btn" target="_blank">مشاهده و خرید با تخفیف</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-result">محصولی با مشخصات مورد نظر یافت نشد.</div>
+            {% endif %}
+        </div>
+
+        <!-- دکمه‌های صفحه‌بندی -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% for p in range(1, total_pages + 1) %}
+                <a href="/?page={{ p }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&cat={{ selected_category }}{% endif %}" 
+                   class="page-link {% if current_page == p %}active{% endif %}">{{ p }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        تمامی حقوق محفوظ است | سیستم هوشمند همکاری در فروش
+    </footer>
+
+</body>
+</html>
