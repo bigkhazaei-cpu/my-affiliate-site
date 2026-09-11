@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود مدیریت</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
+        body { background-color: #f1f5f9; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 100%; max-width: 400px; text-align: center; }
+        h3 { margin-bottom: 1.5rem; color: #4338ca; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; margin-bottom: 1rem; }
+        button { width: 100%; background: #6366f1; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
+        button:hover { background: #4f46e5; }
+        .error { color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; background: #fee2e2; padding: 0.5rem; border-radius: 0.3rem; }
+        a { display: block; margin-top: 1.5rem; color: #64748b; text-decoration: none; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h3>ورود به پنل مدیریت</h3>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+            <input type="password" name="password" placeholder="رمز عبور (پیش‌فرض: admin)" required autofocus>
+            <button type="submit">ورود</button>
+        </form>
+        <a href="/">بازگشت به صفحه اصلی</a>
+    </div>
+
+</body>
+</html>

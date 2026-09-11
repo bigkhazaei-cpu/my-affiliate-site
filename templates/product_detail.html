@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} | بررسی و خرید</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; line-height: 1.8; padding: 2rem 1rem; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .back-link { display: inline-block; margin-bottom: 1.5rem; color: #6366f1; text-decoration: none; font-weight: bold; }
+        .product-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem; background: #e2e8f0; }
+        .badge { display: inline-block; background: #e0e7ff; color: #4338ca; padding: 0.3rem 0.8rem; border-radius: 0.4rem; font-size: 0.85rem; font-weight: bold; margin-bottom: 1rem; }
+        h1 { font-size: 2rem; margin-bottom: 1rem; color: #1e293b; }
+        .desc { font-size: 1.1rem; color: #475569; margin-bottom: 2rem; }
+        .btn { display: block; width: 100%; background-color: #10b981; color: white; text-align: center; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
+        .btn:hover { background-color: #059669; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/" class="back-link">← بازگشت به صفحه اصلی</a>
+        
+        {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-img">
+        {% endif %}
+        
+        <span class="badge">{{ product.category }}</span>
+        <h1>{{ product.title }}</h1>
+        <p class="desc">{{ product.description }}</p>
+        
+        <a href="/go/{{ product.slug }}" class="btn" target="_blank">مشاهده و خرید با تخفیف ویژه</a>
+    </div>
+
+</body>
+</html>
