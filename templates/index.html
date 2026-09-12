@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه و بررسی محصولات</title>
+    <!-- فراخوانی صحیح فایل استایل با url_for -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>فروشگاه و بررسی محصولات</h1>
+        <p>بهترین پیشنهادها و بررسی‌های تخصصی</p>
+    </header>
+
+    <div class="container">
+        <!-- بخش جستجو و فیلتر دسته‌بندی -->
+        <div class="search-filter-container">
+            <form method="GET" action="{{ url_for('home') }}">
+                <input type="text" name="search" placeholder="جستجوی محصول..." value="{{ search_query }}">
+                <select name="category">
+                    <option value="">همه دسته‌بندی‌ها</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn">جستجو</button>
+            </form>
+            <a href="{{ url_for('admin') }}" class="btn btn-success">پنل ادمین</a>
+        </div>
+
+        <!-- لیست محصولات (گرید) -->
+        <div class="products-grid">
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image">
+                        {% else %}
+                            <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#ecf0f1;">بدون تصویر</div>
+                        {% endif %}
+                        <div class="product-info">
+                            <span class="product-category">{{ product.category or 'عمومی' }}</span>
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-title">{{ product.title }}</a>
+                            <p class="product-desc">{{ product.description[:90] if product.description else '' }}...</p>
+                            <div class="product-footer">
+                                <div class="price-box">
+                                    {% if product.discount_price and product.discount_price > 0 %}
+                                        <span class="original-price">{{ product.price }}</span>
+                                        <span class="discount-price">{{ product.discount_price }} تومان</span>
+                                    {% else %}
+                                        <span class="discount-price">{{ product.price if product.price > 0 else 'توافقی' }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn">مشاهده و خرید</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; grid-column: 1 / -1; color: #7f8c8d; padding: 40px;">محصولی یافت نشد.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
