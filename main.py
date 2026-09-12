@@ -1,23 +1,27 @@
 import os
+import time
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from supabase import create_client, Client
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_change_me"
 
-UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# خواندن تنظیمات دیتابیس و کلیدهای Supabase از متغیرهای محیطی (امن و بدون خطای گیت‌هاب)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# مقداردهی کلاینت Supabase Storage (در صورت موجود بودن کلیدها)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
+BUCKET_NAME = "products-images"
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# اتصال به Supabase از طریق Connection Pooler (پورت ۶۵۴۳) و ریجن us-west-2
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres.wvxofntigjdexaiopgow:%40Ali0098%40Ali@aws-0-us-west-2.pooler.supabase.com:6543/postgres")
 
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
@@ -153,10 +157,22 @@ def admin():
         file = request.files.get("image")
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            import time
-            filename = f"{int(time.time())}_{filename}"
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            image_url = url_for('static', filename=f'uploads/{filename}')
+            file_extension = filename.rsplit('.', 1)[1].lower()
+            unique_filename = f"{int(time.time())}_{secure_filename(filename)}"
+            
+            file_bytes = file.read()
+            
+            # آپلود مستقیم به Supabase Storage در صورت فعال بودن کلاینت
+            if supabase:
+                try:
+                    supabase.storage.from_(BUCKET_NAME).upload(
+                        path=unique_filename,
+                        file=file_bytes,
+                        file_options={"content-type": f"image/{file_extension}"}
+                    )
+                    image_url = supabase.storage.from_(BUCKET_NAME).get_public_url(unique_filename)
+                except Exception as e:
+                    print(f"Error uploading image to Supabase: {e}")
             
         cursor.execute('''
             INSERT INTO products (title, category, price, discount_price, description, affiliate_link, image_url)
