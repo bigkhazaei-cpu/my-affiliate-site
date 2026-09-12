@@ -16,8 +16,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# آدرس اتصال به Supabase (لطفاً رمز عبور و شناسه پروژه خود را جایگزین کنید)
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres")
+# آدرس اتصال به Supabase با رمز عبور انکود شده
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:%40Ali0098%40Ali@db.wvxofntigjdexaiopgow.supabase.co:5432/postgres")
 
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
