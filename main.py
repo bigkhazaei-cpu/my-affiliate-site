@@ -16,8 +16,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# استفاده از پورت ۶۵۴۳ و Connection Pooling برای سازگاری کامل با Render
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres.wvxofntigjdexaiopgow:%40Ali0098%40Ali@aws-0-eu-central-1.pooler.supabase.com:6543/postgres")
+# اتصال به Supabase از طریق Connection Pooler (پورت ۶۵۴۳) و ریجن us-west-2
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres.wvxofntigjdexaiopgow:%40Ali0098%40Ali@aws-0-us-west-2.pooler.supabase.com:6543/postgres")
 
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
@@ -172,8 +172,6 @@ def admin():
     cursor.close()
     conn.close()
     return render_template("admin.html", products=products)
-
-@app.repo("/admin/delete/<int:product_id>", methods=["POST"]) if False else None
 
 @app.route("/admin/delete/<int:product_id>", methods=["POST"])
 def delete_product(product_id):
