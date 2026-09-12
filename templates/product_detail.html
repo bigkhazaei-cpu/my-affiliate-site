@@ -3,35 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.title }} | بررسی و خرید</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
-        body { background-color: #f8fafc; color: #1e293b; line-height: 1.8; padding: 2rem 1rem; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .back-link { display: inline-block; margin-bottom: 1.5rem; color: #6366f1; text-decoration: none; font-weight: bold; }
-        .product-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1.5rem; background: #e2e8f0; }
-        .badge { display: inline-block; background: #e0e7ff; color: #4338ca; padding: 0.3rem 0.8rem; border-radius: 0.4rem; font-size: 0.85rem; font-weight: bold; margin-bottom: 1rem; }
-        h1 { font-size: 2rem; margin-bottom: 1rem; color: #1e293b; }
-        .desc { font-size: 1.1rem; color: #475569; margin-bottom: 2rem; }
-        .btn { display: block; width: 100%; background-color: #10b981; color: white; text-align: center; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
-        .btn:hover { background-color: #059669; }
-    </style>
+    <title>{{ product.title }} - جزئیات محصول</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <div class="container">
-        <a href="/" class="back-link">← بازگشت به صفحه اصلی</a>
-        
-        {% if product.image_url %}
-            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-img">
-        {% endif %}
-        
-        <span class="badge">{{ product.category }}</span>
-        <h1>{{ product.title }}</h1>
-        <p class="desc">{{ product.description }}</p>
-        
-        <a href="/go/{{ product.slug }}" class="btn" target="_blank">مشاهده و خرید با تخفیف ویژه</a>
-    </div>
+    <!-- هدر ساده -->
+    <header class="bg-white border-b border-slate-200 py-4 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
+            <a href="/" class="text-violet-600 hover:text-violet-700 text-sm font-medium flex items-center gap-2">
+                ← بازگشت به صفحه اصلی
+            </a>
+            <span class="text-xs bg-violet-100 text-violet-700 px-3 py-1 rounded-full font-medium">{{ product.category }}</span>
+        </div>
+    </header>
+
+    <!-- محتوای جزئیات محصول -->
+    <main class="max-w-5xl mx-auto px-4 py-12 flex-grow w-full">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 items-center">
+            
+            <!-- تصویر محصول -->
+            <div class="h-80 bg-slate-100 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover">
+                {% else %}
+                <span class="text-slate-400 text-sm">بدون تصویر</span>
+                {% endif %}
+            </div>
+
+            <!-- اطلاعات و دکمه خرید -->
+            <div class="flex flex-col justify-between h-full space-y-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                        {{ product.title }}
+                    </h1>
+                    <div class="mt-4 text-slate-600 text-base leading-relaxed whitespace-pre-line">
+                        {{ product.description }}
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-6 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-sm text-slate-500">
+                        <span>تعداد کلیک روی لینک:</span>
+                        <strong class="text-slate-800 font-bold">{{ product.clicks }}</strong>
+                    </div>
+
+                    <a href="{{ product.affiliate_link }}" target="_blank" class="block w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-200 transition text-base">
+                        مشاهده در فروشگاه و خرید 🚀
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- فوتر -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm">
+        تمامی حقوق محفوظ است | سیستم هوشمند همکاری در فروش
+    </footer>
 
 </body>
 </html>
