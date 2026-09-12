@@ -1,68 +1,42 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.title }} - جزئیات محصول</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
-
-    <!-- هدر ساده -->
-    <header class="bg-white border-b border-slate-200 py-4 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 flex justify-between items-center">
-            <a href="/" class="text-violet-600 hover:text-violet-700 text-sm font-medium flex items-center gap-2">
-                ← بازگشت به صفحه اصلی
-            </a>
-            <span class="text-xs bg-violet-100 text-violet-700 px-3 py-1 rounded-full font-medium">{{ product.category }}</span>
+<!-- در بخش پایانی محتوای product_detail.html، بخش نظرات را اضافه کنید -->
+<div class="mt-12 bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm">
+    <h2 class="text-xl font-bold text-slate-900 mb-6">نظرات و امتیازات کاربران</h2>
+    
+    <!-- فرم ثبت نظر -->
+    <form method="POST" class="mb-10 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+        <h3 class="text-sm font-bold text-slate-700">نظر خود را درباره این محصول ثبت کنید</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input type="text" name="author" required placeholder="نام شما" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500">
+            <select name="rating" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500">
+                <option value="5">⭐⭐⭐⭐⭐ (۵ از ۵ - عالی)</option>
+                <option value="4">⭐⭐⭐⭐ (۴ از ۵ - خوب)</option>
+                <option value="3">⭐⭐⭐ (۳ از ۵ - متوسط)</option>
+                <option value="2">⭐⭐ (۲ از ۵ - ضعیف)</option>
+                <option value="1">⭐ (۱ از ۵ - خیلی بد)</option>
+            </select>
         </div>
-    </header>
+        <textarea name="comment" required rows="3" placeholder="متن نظر..." class="w-full bg-white border border-slate-200 rounded-xl p-4 text-sm focus:outline-none focus:border-violet-500"></textarea>
+        <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition shadow-md shadow-violet-200">
+            ارسال نظر
+        </button>
+    </form>
 
-    <!-- محتوای جزئیات محصول -->
-    <main class="max-w-5xl mx-auto px-4 py-12 flex-grow w-full">
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 items-center">
-            
-            <!-- تصویر محصول -->
-            <div class="h-80 bg-slate-100 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center">
-                {% if product.image_url %}
-                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover">
-                {% else %}
-                <span class="text-slate-400 text-sm">بدون تصویر</span>
-                {% endif %}
+    <!-- لیست نظرات -->
+    <div class="space-y-4">
+        {% if reviews %}
+        {% for r in reviews %}
+        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-slate-800 text-sm">{{ r.author }}</span>
+                <span class="text-amber-500 text-xs">
+                    {% for i in range(r.rating) %}⭐{% endfor %}
+                </span>
             </div>
-
-            <!-- اطلاعات و دکمه خرید -->
-            <div class="flex flex-col justify-between h-full space-y-6">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
-                        {{ product.title }}
-                    </h1>
-                    <div class="mt-4 text-slate-600 text-base leading-relaxed whitespace-pre-line">
-                        {{ product.description }}
-                    </div>
-                </div>
-
-                <div class="space-y-4 pt-6 border-t border-slate-100">
-                    <div class="flex items-center justify-between text-sm text-slate-500">
-                        <span>تعداد کلیک روی لینک:</span>
-                        <strong class="text-slate-800 font-bold">{{ product.clicks }}</strong>
-                    </div>
-
-                    <a href="{{ product.affiliate_link }}" target="_blank" class="block w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-200 transition text-base">
-                        مشاهده در فروشگاه و خرید 🚀
-                    </a>
-                </div>
-            </div>
-
+            <p class="text-slate-600 text-sm leading-relaxed">{{ r.comment }}</p>
         </div>
-    </main>
-
-    <!-- فوتر -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm">
-        تمامی حقوق محفوظ است | سیستم هوشمند همکاری در فروش
-    </footer>
-
-</body>
-</html>
+        {% endfor %}
+        {% else %}
+        <p class="text-slate-400 text-sm text-center py-4">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+        {% endif %}
+    </div>
+</div>
