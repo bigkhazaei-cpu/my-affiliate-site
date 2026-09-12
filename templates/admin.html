@@ -1,101 +1,36 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت پیشرفته</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
-
-    <!-- هدر مدیریت -->
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
-            <h1 class="text-xl font-bold">پنل مدیریت سیستم افیلیت</h1>
-            <div class="flex items-center gap-4">
-                <a href="/" class="text-slate-300 hover:text-white text-sm transition">مشاهده سایت</a>
-                <a href="/logout" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-4 py-2 rounded-xl text-sm transition">خروج</a>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
-        
-        <!-- فرم افزودن محصول -->
-        <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 class="text-lg font-bold text-slate-900 mb-6">افزودن محصول جدید</h2>
-            <form method="POST" action="/admin/add" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">عنوان محصول</label>
-                    <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">دسته‌بندی</label>
-                    <input type="text" name="category" required placeholder="مثلا: دیجیتال، پوشاک..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">توضیحات</label>
-                    <textarea name="description" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">لینک افیلیت (مقصد خرید)</label>
-                    <input type="url" name="affiliate_link" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">لینک تصویر محصول</label>
-                    <input type="url" name="image_url" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-3 rounded-xl transition shadow-md shadow-violet-200 w-full md:w-auto">
-                        ثبت و انتشار محصول
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- لیست محصولات موجود -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-slate-100">
-                <h2 class="text-lg font-bold text-slate-900">محصولات ثبت‌شده</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-100">
-                            <th class="p-4">عنوان</th>
-                            <th class="p-4">دسته‌بندی</th>
-                            <th class="p-4">کلیک‌ها</th>
-                            <th class="p-4 text-center">عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 text-sm">
-                        {% for p in products %}
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="p-4 font-medium text-slate-900">{{ p.title }}</td>
-                            <td class="p-4 text-slate-500">
-                                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">{{ p.category }}</span>
-                            </td>
-                            <td class="p-4 text-slate-600 font-bold">{{ p.clicks }}</td>
-                            <td class="p-4 text-center">
-                                <a href="/admin/delete/{{ p.id }}" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟');" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition">
-                                    حذف
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- فوتر -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-12">
-        تمامی حقوق محفوظ است | سیستم هوشمند همکاری در فروش
-    </footer>
-
-</body>
-</html>
+<!-- در بخش فرم admin.html -->
+<form method="POST" action="/admin/add" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">عنوان محصول</label>
+        <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500">
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">دسته‌بندی</label>
+        <input type="text" name="category" required placeholder="مثلا: دیجیتال، پوشاک..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500">
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">قیمت اصلی (تومان)</label>
+        <input type="number" name="price" placeholder="مثلا: 1000000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500">
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">قیمت با تخفیف (تومان)</label>
+        <input type="number" name="discount_price" placeholder="مثلا: 850000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500">
+    </div>
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-slate-700 mb-2">توضیحات</label>
+        <textarea name="description" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500"></textarea>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">لینک افیلیت (مقصد خرید)</label>
+        <input type="url" name="affiliate_link" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500">
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">آپلود تصویر محصول (فایل)</label>
+        <input type="file" name="image_file" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+    </div>
+    <div class="md:col-span-2">
+        <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-3 rounded-xl transition shadow-md shadow-violet-200 w-full md:w-auto">
+            ثبت و انتشار محصول با امکانات کامل
+        </button>
+    </div>
+</form>
