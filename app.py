@@ -1,192 +1,192 @@
+import os
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
-from flask import Flask, g, redirect, render_template, request, session, url_for
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_affiliate_key_123'
-DATABASE = 'database.db'
-ADMIN_PASSWORD = 'admin'
+app.secret_key = "super_secret_key_affiliate"
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-    return db
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def init_db():
-    with app.app_context():
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS products (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                description TEXT,
-                slug TEXT UNIQUE NOT NULL,
-                target_url TEXT NOT NULL,
-                category TEXT DEFAULT 'عمومی',
-                image_url TEXT,
-                clicks INTEGER DEFAULT 0
-            )
-        ''')
-        
-        for col_name, col_type in [('category', "TEXT DEFAULT 'عمومی'"), ('image_url', 'TEXT'), ('clicks', 'INTEGER DEFAULT 0')]:
-            try:
-                cursor.execute(f'ALTER TABLE products ADD COLUMN {col_name} {col_type}')
-                db.commit()
-            except sqlite3.OperationalError:
-                pass
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    # جدول محصولات با فیلترهای جدید قیمت
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            affiliate_link TEXT NOT NULL,
+            image_url TEXT,
+            price REAL DEFAULT 0,
+            discount_price REAL DEFAULT 0,
+            clicks INTEGER DEFAULT 0
+        )
+    ''')
+    # جدول نظرات و امتیازات محصولات
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER,
+            author TEXT NOT NULL,
+            comment TEXT NOT NULL,
+            rating INTEGER DEFAULT 5,
+            FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-        cursor.execute('SELECT COUNT(*) FROM products')
-        if cursor.fetchone()[0] == 0:
-            cursor.execute('''
-                INSERT INTO products (title, description, slug, target_url, category, image_url, clicks)
-                VALUES (?, ?, ?, ?, ?, ?, 0)
-            ''', ('گوشی هوشمند پرچمدار', 'بررسی تخصصی و خرید با تخفیف ویژه از معتبرترین فروشگاه آنلاین. این گوشی دارای دوربین قدرتمند و پردازنده فوق‌سریع است.', 'phone-offer', 'https://www.digikala.com', 'دیجیتال', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500'))
-            
-            cursor.execute('''
-                INSERT INTO products (title, description, slug, target_url, category, image_url, clicks)
-                VALUES (?, ?, ?, ?, ?, ?, 0)
-            ''', ('هاست پرسرعت ابری', 'مناسب برای راه‌اندازی سایت‌های پربازدید با آپدیت و پشتیبانی ۲۴ ساعته و پهنای باند نامحدود.', 'hosting-deal', 'https://example.com', 'خدمات وب', 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500'))
-            
-            db.commit()
+init_db()
 
 @app.route('/')
 def home():
-    db = get_db()
-    cursor = db.cursor()
+    search_query = request.args.get('search', '').strip()
+    selected_category = request.args.get('category', '').strip()
     
-    search_query = request.args.get('q', '')
-    selected_category = request.args.get('cat', '')
-    page = request.args.get('page', 1, type=int)
-    per_page = 6  # تعداد محصولات در هر صفحه
-    offset = (page - 1) * per_page
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
     
+    # استخراج دسته‌بندی‌های یکتا
+    cursor.execute('SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != ""')
+    categories = [row['category'] for row in cursor.fetchall()]
+    
+    # کوئری جستجو و فیلتر پیشرفته
     query = 'SELECT * FROM products WHERE 1=1'
-    count_query = 'SELECT COUNT(*) FROM products WHERE 1=1'
     params = []
     
     if search_query:
-        query_filter = ' AND (title LIKE ? OR description LIKE ?)'
-        query += query_filter
-        count_query += query_filter
+        query += ' AND (title LIKE ? OR description LIKE ?)'
         params.extend([f'%{search_query}%', f'%{search_query}%'])
         
-    if selected_category and selected_category != 'all':
-        query_filter = ' AND category = ?'
-        query += query_filter
-        count_query += query_filter
+    if selected_category:
+        query += ' AND category = ?'
         params.append(selected_category)
         
-    # دریافت تعداد کل محصولات برای صفحه‌بندی
-    cursor.execute(count_query, params)
-    total_products = cursor.fetchone()[0]
-    total_pages = (total_products + per_page - 1) // per_page if total_products > 0 else 1
-    
-    # اضافه کردن محدودیت صفحه به کوئری اصلی
-    query += ' LIMIT ? OFFSET ?'
-    cursor.execute(query, params + [per_page, offset])
+    query += ' ORDER BY id DESC'
+    cursor.execute(query, params)
     products = cursor.fetchall()
-    
-    cursor.execute('SELECT DISTINCT category FROM products')
-    categories = [row['category'] for row in cursor.fetchall() if row['category']]
+    conn.close()
     
     return render_template('index.html', products=products, categories=categories, 
-                           search_query=search_query, selected_category=selected_category, 
-                           current_page=page, total_pages=total_pages)
+                           search_query=search_query, selected_category=selected_category)
 
-@app.route('/product/<slug>')
-def product_detail(slug):
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute('SELECT * FROM products WHERE slug = ?', (slug,))
+@app.route('/product/<int:product_id>', methods=['GET', 'POST'])
+def product_detail(product_id):
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    if request.method == 'POST':
+        author = request.form.get('author')
+        comment = request.form.get('comment')
+        rating = int(request.form.get('rating', 5))
+        if author and comment:
+            cursor.execute('INSERT INTO reviews (product_id, author, comment, rating) VALUES (?, ?, ?, ?)',
+                           (product_id, author, comment, rating))
+            conn.commit()
+        return redirect(url_for('product_detail', product_id=product_id))
+    
+    # افزایش تعداد کلیک و نمایش جزئیات
+    cursor.execute('UPDATE products SET clicks = clicks + 1 WHERE id = ?', (product_id,))
+    conn.commit()
+    
+    cursor.execute('SELECT * FROM products WHERE id = ?', (product_id,))
     product = cursor.fetchone()
+    
+    cursor.execute('SELECT * FROM reviews WHERE product_id = ? ORDER BY id DESC', (product_id,))
+    reviews = cursor.fetchall()
+    conn.close()
     
     if not product:
-        return "محصول مورد نظر یافت نشد.", 404
+        return "محصول مورد نظر یافت نشد", 404
         
-    return render_template('product_detail.html', product=product)
+    return render_template('product_detail.html', product=product, reviews=reviews)
 
-@app.route('/go/<slug>')
-def affiliate_redirect(slug):
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute('SELECT id, target_url FROM products WHERE slug = ?', (slug,))
-    product = cursor.fetchone()
-    
-    if product:
-        product_id = product['id']
-        target_url = product['target_url']
-        cursor.execute('UPDATE products SET clicks = clicks + 1 WHERE id = ?', (product_id,))
-        db.commit()
-        return redirect(target_url, code=302)
-    
-    return "محصول مورد نظر یافت نشد.", 404
-
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     error = None
     if request.method == 'POST':
-        if request.form['password'] == ADMIN_PASSWORD:
+        password = request.form.get('password')
+        if password == "admin123":  # رمز پیش‌فرض پنل
             session['logged_in'] = True
-            return redirect(url_for('admin_panel'))
+            return redirect(url_for('admin'))
         else:
-            error = 'رمز عبور اشتباه است.'
+            error = "رمز عبور اشتباه است."
     return render_template('login.html', error=error)
 
-@app.route('/admin/logout')
-def admin_logout():
+@app.route('/logout')
+def logout():
     session.pop('logged_in', None)
-    return redirect(url_for('admin_login'))
+    return redirect(url_for('home'))
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin_panel():
+@app.route('/admin')
+def admin():
     if not session.get('logged_in'):
-        return redirect(url_for('admin_login'))
-        
-    db = get_db()
-    cursor = db.cursor()
+        return redirect(url_for('login'))
     
-    if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        slug = request.form['slug']
-        target_url = request.form['target_url']
-        category = request.form['category']
-        image_url = request.form['image_url']
-        
-        try:
-            cursor.execute('''
-                INSERT INTO products (title, description, slug, target_url, category, image_url, clicks)
-                VALUES (?, ?, ?, ?, ?, ?, 0)
-            ''', (title, description, slug, target_url, category, image_url))
-            db.commit()
-        except sqlite3.IntegrityError:
-            return "خطا: شناسه‌ی (Slug) این محصول تکراری است. لطفاً مقدار دیگری انتخاب کنید."
-            
-        return redirect(url_for('admin_panel'))
-        
-    cursor.execute('SELECT * FROM products')
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM products ORDER BY id DESC')
     products = cursor.fetchall()
+    conn.close()
     return render_template('admin.html', products=products)
 
-@app.route('/admin/delete/<int:product_id>', methods=['POST'])
-def delete_product(product_id):
+@app.route('/admin/add', methods=['POST'])
+def admin_add():
     if not session.get('logged_in'):
-        return redirect(url_for('admin_login'))
+        return redirect(url_for('login'))
         
-    db = get_db()
-    cursor = db.cursor()
+    title = request.form.get('title')
+    description = request.form.get('description')
+    category = request.form.get('category')
+    affiliate_link = request.form.get('affiliate_link')
+    price = float(request.form.get('price') or 0)
+    discount_price = float(request.form.get('discount_price') or 0)
+    
+    image_url = ""
+    file = request.files.get('image_file')
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        image_url = f'/static/uploads/{filename}'
+    else:
+        image_url = request.form.get('image_url_text', '')
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO products (title, description, category, affiliate_link, image_url, price, discount_price)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (title, description, category, affiliate_link, image_url, price, discount_price))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('admin'))
+
+@app.route('/admin/delete/<int:product_id>')
+def admin_delete(product_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
     cursor.execute('DELETE FROM products WHERE id = ?', (product_id,))
-    db.commit()
-    return redirect(url_for('admin_panel'))
+    cursor.execute('DELETE FROM reviews WHERE product_id = ?', (product_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
-    init_db()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
