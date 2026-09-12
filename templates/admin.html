@@ -3,77 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت محصولات</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
-        body { background-color: #f1f5f9; padding: 2rem; color: #1e293b; }
-        .container { max-width: 950px; margin: 0 auto; background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .top-links { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
-        a.btn-link { color: #6366f1; text-decoration: none; font-weight: bold; }
-        a.logout-btn { color: #ef4444; text-decoration: none; font-weight: bold; }
-        h3 { margin-bottom: 1rem; color: #4338ca; }
-        form.add-form { background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: grid; gap: 1rem; margin-bottom: 2.5rem; }
-        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; }
-        button.submit-btn { background: #10b981; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
-        button.submit-btn:hover { background: #059669; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { padding: 0.75rem; text-align: right; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
-        th { background: #f8fafc; font-weight: bold; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 0.3rem; cursor: pointer; }
-        .btn-danger:hover { background: #dc2626; }
-    </style>
+    <title>پنل مدیریت پیشرفته</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <div class="container">
-        <div class="top-links">
-            <a href="/" class="btn-link">← مشاهده سایت</a>
-            <a href="/admin/logout" class="logout-btn">خروج از حساب</a>
+    <!-- هدر مدیریت -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
+            <h1 class="text-xl font-bold">پنل مدیریت سیستم افیلیت</h1>
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-slate-300 hover:text-white text-sm transition">مشاهده سایت</a>
+                <a href="/logout" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 px-4 py-2 rounded-xl text-sm transition">خروج</a>
+            </div>
         </div>
-        
-        <h3>افزودن محصول جدید</h3>
-        <form method="POST" class="add-form">
-            <input type="text" name="title" placeholder="عنوان محصول" required>
-            <input type="text" name="slug" placeholder="شناسه یکتا (مثلا: smart-watch)" required>
-            <input type="text" name="category" placeholder="دسته‌بندی (مثلا: دیجیتال)" required>
-            <input type="url" name="target_url" placeholder="لینک کامل مقصد (https://...)" required>
-            <input type="url" name="image_url" placeholder="لینک تصویر محصول (اختیاری - https://...)">
-            <textarea name="description" placeholder="توضیحات کوتاه" rows="2"></textarea>
-            <button type="submit" class="submit-btn">ثبت محصول</button>
-        </form>
+    </header>
 
-        <h3>لیست محصولات موجود</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>عنوان</th>
-                    <th>دسته‌بندی</th>
-                    <th>اسلاگ</th>
-                    <th>کلیک‌ها</th>
-                    <th>عملیات</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                    <tr>
-                        <td><b>{{ product.title }}</b></td>
-                        <td>{{ product.category }}</td>
-                        <td><code>{{ product.slug }}</code></td>
-                        <td><b>{{ product.clicks }}</b></td>
-                        <td>
-                            <form action="/admin/delete/{{ product.id }}" method="POST" onsubmit="return confirm('آیا از حذف مطمئن هستید؟');">
-                                <button type="submit" class="btn-danger">حذف</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: #64748b; padding: 2rem;">هیچ محصولی ثبت نشده است.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+        
+        <!-- فرم افزودن محصول -->
+        <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 class="text-lg font-bold text-slate-900 mb-6">افزودن محصول جدید</h2>
+            <form method="POST" action="/admin/add" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">عنوان محصول</label>
+                    <input type="text" name="title" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">دسته‌بندی</label>
+                    <input type="text" name="category" required placeholder="مثلا: دیجیتال، پوشاک..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">توضیحات</label>
+                    <textarea name="description" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">لینک افیلیت (مقصد خرید)</label>
+                    <input type="url" name="affiliate_link" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">لینک تصویر محصول</label>
+                    <input type="url" name="image_url" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-3 rounded-xl transition shadow-md shadow-violet-200 w-full md:w-auto">
+                        ثبت و انتشار محصول
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- لیست محصولات موجود -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100">
+                <h2 class="text-lg font-bold text-slate-900">محصولات ثبت‌شده</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase border-b border-slate-100">
+                            <th class="p-4">عنوان</th>
+                            <th class="p-4">دسته‌بندی</th>
+                            <th class="p-4">کلیک‌ها</th>
+                            <th class="p-4 text-center">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">
+                        {% for p in products %}
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="p-4 font-medium text-slate-900">{{ p.title }}</td>
+                            <td class="p-4 text-slate-500">
+                                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">{{ p.category }}</span>
+                            </td>
+                            <td class="p-4 text-slate-600 font-bold">{{ p.clicks }}</td>
+                            <td class="p-4 text-center">
+                                <a href="/admin/delete/{{ p.id }}" onclick="return confirm('آیا از حذف این محصول اطمینان دارید؟');" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition">
+                                    حذف
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- فوتر -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-slate-500 text-sm mt-12">
+        تمامی حقوق محفوظ است | سیستم هوشمند همکاری در فروش
+    </footer>
 
 </body>
 </html>
