@@ -9,10 +9,10 @@ from supabase import create_client, Client
 app = Flask(__name__)
 app.secret_key = "super_secret_key_change_me"
 
-# خواندن تنظیمات دیتابیس و کلیدهای Supabase از متغیرهای محیطی (امن و بدون خطای گیت‌هاب)
+# خواندن تنظیمات دیتابیس و کلیدهای Supabase از متغیرهای محیطی
 DATABASE_URL = os.environ.get("DATABASE_URL")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")  # هماهنگ شده با نام ثبت شده در Render
 
 # مقداردهی کلاینت Supabase Storage (در صورت موجود بودن کلیدها)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
