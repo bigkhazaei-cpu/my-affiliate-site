@@ -5,18 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ورود به پنل ادمین</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f6f7;
+            margin: 0;
+        }
+        .login-box {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
+
+    <div class="login-box">
         <h2 style="margin-bottom: 20px; text-align: center; color: #2c3e50;">ورود ادمین</h2>
+        
         <form method="POST">
-            <div class="form-group">
-                <label>رمز عبور</label>
-                <input type="password" name="password" required placeholder="رمز عبور را وارد کنید">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; color: #34495e;">رمز عبور</label>
+                <input type="password" name="password" required placeholder="رمز عبور را وارد کنید" style="width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 5px; box-sizing: border-box;">
             </div>
-            <button type="submit" class="btn" style="width: 100%;">ورود</button>
+            <button type="submit" class="btn" style="width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">ورود</button>
         </form>
-        <p style="text-align: center; margin-top: 15px;"><a href="{{ url_for('home') }}" style="color: #3498db; text-decoration: none;">بازگشت به صفحه اصلی</a></p>
+
+        <p style="text-align: center; margin-top: 15px;">
+            <a href="{{ url_for('home') }}" style="color: #7f8c8d; text-decoration: none; font-size: 14px;">بازگشت به صفحه اصلی</a>
+        </p>
     </div>
+
 </body>
 </html>
