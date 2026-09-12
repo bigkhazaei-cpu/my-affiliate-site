@@ -1,42 +1,86 @@
-<!-- در بخش پایانی محتوای product_detail.html، بخش نظرات را اضافه کنید -->
-<div class="mt-12 bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm">
-    <h2 class="text-xl font-bold text-slate-900 mb-6">نظرات و امتیازات کاربران</h2>
-    
-    <!-- فرم ثبت نظر -->
-    <form method="POST" class="mb-10 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-        <h3 class="text-sm font-bold text-slate-700">نظر خود را درباره این محصول ثبت کنید</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input type="text" name="author" required placeholder="نام شما" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500">
-            <select name="rating" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500">
-                <option value="5">⭐⭐⭐⭐⭐ (۵ از ۵ - عالی)</option>
-                <option value="4">⭐⭐⭐⭐ (۴ از ۵ - خوب)</option>
-                <option value="3">⭐⭐⭐ (۳ از ۵ - متوسط)</option>
-                <option value="2">⭐⭐ (۲ از ۵ - ضعیف)</option>
-                <option value="1">⭐ (۱ از ۵ - خیلی بد)</option>
-            </select>
-        </div>
-        <textarea name="comment" required rows="3" placeholder="متن نظر..." class="w-full bg-white border border-slate-200 rounded-xl p-4 text-sm focus:outline-none focus:border-violet-500"></textarea>
-        <button type="submit" class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition shadow-md shadow-violet-200">
-            ارسال نظر
-        </button>
-    </form>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} - بررسی و خرید</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-    <!-- لیست نظرات -->
-    <div class="space-y-4">
-        {% if reviews %}
-        {% for r in reviews %}
-        <div class="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
-            <div class="flex justify-between items-center mb-2">
-                <span class="font-bold text-slate-800 text-sm">{{ r.author }}</span>
-                <span class="text-amber-500 text-xs">
-                    {% for i in range(r.rating) %}⭐{% endfor %}
-                </span>
+    <header>
+        <h1>{{ product.title }}</h1>
+        <p><a href="{{ url_for('home') }}" style="color: #bdc3c7; text-decoration: underline;">بازگشت به صفحه اصلی</a></p>
+    </header>
+
+    <div class="container">
+        <!-- جزئیات محصول -->
+        <div class="product-detail-container">
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.title }}" style="max-width: 400px; width: 100%; height: auto; border-radius: 8px; object-fit: cover;">
+                {% endif %}
+                <div style="flex: 1;">
+                    <span class="product-category">{{ product.category or 'عمومی' }}</span>
+                    <h2 style="margin: 10px 0; color: #2c3e50;">{{ product.title }}</h2>
+                    
+                    <div class="price-box" style="margin: 15px 0;">
+                        {% if product.discount_price and product.discount_price > 0 %}
+                            <span class="original-price" style="font-size: 16px;">{{ product.price }} تومان</span>
+                            <span class="discount-price" style="font-size: 22px; margin-right: 10px;">{{ product.discount_price }} تومان</span>
+                        {% else %}
+                            <span class="discount-price" style="font-size: 22px;">{{ product.price if product.price > 0 else 'توافقی' }}</span>
+                        {% endif %}
+                    </div>
+
+                    <p style="margin: 20px 0; color: #555; line-height: 1.8;">{{ product.description }}</p>
+
+                    {% if product.affiliate_link %}
+                        <a href="{{ product.affiliate_link }}" target="_blank" class="btn btn-success" style="font-size: 16px; padding: 12px 25px; display: inline-block;">خرید و مشاهده در فروشگاه مقصد</a>
+                    {% endif %}
+                </div>
             </div>
-            <p class="text-slate-600 text-sm leading-relaxed">{{ r.comment }}</p>
         </div>
-        {% endfor %}
-        {% else %}
-        <p class="text-slate-400 text-sm text-center py-4">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
-        {% endif %}
+
+        <!-- نظرات و امتیازات -->
+        <div class="reviews-section">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">نظرات و امتیازات کاربران</h3>
+            
+            <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}" style="margin-bottom: 30px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                <h4 style="margin-bottom: 10px; font-size: 15px;">نظر خود را درباره این محصول ثبت کنید</h4>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <input type="text" name="author" placeholder="نام شما" required style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <select name="rating" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="5">⭐⭐⭐⭐⭐ (۵ - عالی)</option>
+                        <option value="4">⭐⭐⭐⭐ (۴ - خوب)</option>
+                        <option value="3">⭐⭐⭐ (۳ - متوسط)</option>
+                        <option value="2">⭐⭐ (۲ - ضعیف)</option>
+                        <option value="1">⭐ (۱ - خیلی بد)</option>
+                    </select>
+                </div>
+                <textarea name="comment" rows="3" placeholder="متن نظر..." required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px;"></textarea>
+                <button type="submit" class="btn">ارسال نظر</button>
+            </form>
+
+            <div class="reviews-list">
+                {% if reviews %}
+                    {% for r in reviews %}
+                        <div class="review-item">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="review-author">{{ r.author }}</span>
+                                <span style="color: #f39c12;">
+                                    {% for i in range(r.rating) %}⭐{% endfor %}
+                                </span>
+                            </div>
+                            <p class="review-comment">{{ r.comment }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: #7f8c8d; text-align: center;">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
-</div>
+
+</body>
+</html>
