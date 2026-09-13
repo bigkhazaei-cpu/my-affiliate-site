@@ -6,12 +6,19 @@
     <title>{{ product.title }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style> body { font-family: 'Vazirmatn', sans-serif; } </style>
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="text-gray-800 antialiased">
 
     <!-- هدر -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-blue-600 tracking-tight">فروشگاه من</a>
             <a href="{{ url_for('home') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
@@ -22,7 +29,7 @@
 
     <main class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- کارت اصلی محصول -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-center">
+        <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl shadow-gray-200/50 border border-white p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-center">
             <div class="bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden flex items-center justify-center h-80 shadow-inner">
                 {% if product.image_url %}
                     <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover rounded-xl">
@@ -44,7 +51,7 @@
                         <span class="text-2xl font-extrabold text-emerald-600">{{ product.discount_price }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
                     </div>
                     {% if product.affiliate_link %}
-                        <a href="{{ product.affiliate_link }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition shadow-sm text-sm">
+                        <a href="{{ product.affiliate_link }}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition shadow-lg shadow-blue-500/25 text-sm">
                             خرید محصول
                         </a>
                     {% endif %}
@@ -53,29 +60,29 @@
         </div>
 
         <!-- بخش نظرات -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-8">
+        <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl shadow-gray-200/50 border border-white p-6 sm:p-8 mb-8">
             <h3 class="text-xl font-bold text-gray-900 mb-6">نظرات کاربران</h3>
             
             <div class="space-y-4 mb-8">
                 {% if comments %}
                     {% for c in comments %}
-                        <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                        <div class="bg-gray-50/80 rounded-2xl p-4 border border-gray-100/80">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="font-bold text-sm text-gray-800">{{ c.author }}</span>
-                                <span class="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-lg">⭐ {{ c.rating }} از 5</span>
+                                <span class="text-xs text-amber-500 font-bold bg-amber-50 px-2.5 py-1 rounded-xl">⭐ {{ c.rating }} از 5</span>
                             </div>
                             <p class="text-gray-600 text-sm leading-relaxed">{{ c.content }}</p>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="text-center py-8 bg-gray-50/50 rounded-xl border border-gray-100 text-gray-400 text-sm">
+                    <div class="text-center py-8 bg-gray-50/80 rounded-2xl border border-gray-100/80 text-gray-400 text-sm">
                         هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!
                     </div>
                 {% endif %}
             </div>
 
             <!-- فرم ثبت نظر -->
-            <form action="{{ url_for('add_comment', product_id=product.id) }}" method="POST" class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-4">
+            <form action="{{ url_for('add_comment', product_id=product.id) }}" method="POST" class="bg-gray-50/80 p-6 rounded-2xl border border-gray-100/80 space-y-4">
                 <h4 class="font-bold text-gray-800 text-sm">ثبت نظر جدید</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -97,17 +104,17 @@
                     <label class="block text-xs font-semibold text-gray-600 mb-1">متن نظر</label>
                     <textarea name="content" rows="3" placeholder="نظر خود درباره این محصول را بنویسید..." required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition bg-white"></textarea>
                 </div>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition shadow-sm">ارسال نظر</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition shadow-md shadow-blue-500/20">ارسال نظر</button>
             </form>
         </div>
 
         <!-- محصولات مرتبط -->
         {% if related_products %}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl shadow-gray-200/50 border border-white p-6 sm:p-8">
                 <h3 class="text-xl font-bold text-gray-900 mb-6">محصولات مشابه</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {% for rp in related_products %}
-                        <div class="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-200">
+                        <div class="bg-white border border-gray-100/80 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:shadow-lg transition duration-300">
                             <div>
                                 <!-- کادر تصویر محصول مشابه -->
                                 <div class="bg-gray-50 border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center h-44 mb-4">
