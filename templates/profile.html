@@ -2,125 +2,69 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حساب کاربری | پنل مدیریت مشتری</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f1f5f9 !important;
-            background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 50%) !important;
-            background-attachment: fixed;
-            min-height: 100vh;
-        }
-    </style>
+    <title>پروفایل کاربری | دیجی‌پلاس</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="text-gray-800 antialiased">
-
-    <!-- هدر ساده بالای پنل -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-red-600 tracking-tight">دیجی‌پلاس <span class="text-xs text-gray-400 font-normal">| پنل کاربری</span></a>
-            <div class="flex items-center gap-3 text-xs">
-                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-600 transition">بازگشت به سایت</a>
-                <span class="text-gray-300">|</span>
-                <a href="{{ url_for('user_logout') }}" class="text-red-600 font-bold hover:underline">خروج از حساب</a>
+<body class="bg-gray-50 font-sans">
+    <div class="max-w-4xl mx-auto p-6 mt-10">
+        <!-- هدر پروفایل -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl font-bold">
+                    {{ session.get('user_email', 'U')[0].upper() }}
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">حساب کاربری</h1>
+                    <p class="text-gray-500 text-sm">{{ session.get('user_email') }}</p>
+                </div>
             </div>
+            <a href="{{ url_for('user_logout') }}" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition text-sm font-medium">
+                <i class="fa-solid fa-arrow-right-from-bracket ml-2"></i>خروج از حساب
+            </a>
         </div>
-    </header>
 
-    <main class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            
-            <!-- سایدبار منوی کاربری (۱ ستون) -->
-            <div class="space-y-4">
-                <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm text-right">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center font-extrabold text-lg">
-                            {{ session.get('user_name', 'ک')[0] }}
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-sm">{{ session.get('user_name', 'کاربر مهمان') }}</h3>
-                            <span class="text-[11px] text-gray-400">عضو دیجی‌پلاس</span>
-                        </div>
-                    </div>
-                    
-                    <nav class="space-y-2 text-xs font-medium">
-                        <a href="#dashboard" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-blue-50 text-blue-600 font-bold transition">
-                            📊 داشبورد من
-                        </a>
-                        <a href="#wishlist" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-slate-50 transition">
-                            ❤️ محصولات مورد علاقه
-                        </a>
-                        <a href="#history" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-slate-50 transition">
-                            🕒 تاریخچه بازدیدها
-                        </a>
-                        <a href="#settings" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-slate-50 transition">
-                            ⚙️ تنظیمات حساب
-                        </a>
-                    </nav>
+        <!-- فرم ویرایش اطلاعات -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">ویرایش مشخصات</h2>
+            <form action="{{ url_for('edit_profile') }}" method="POST" class="flex gap-4 items-end">
+                <div class="flex-1">
+                    <label class="block text-sm text-gray-600 mb-2">ایمیل جدید</label>
+                    <input type="email" name="email" value="{{ session.get('user_email') }}" required
+                           class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:border-red-500">
                 </div>
-            </div>
+                <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">ذخیره تغییرات</button>
+            </form>
+        </div>
 
-            <!-- محتوای اصلی پنل (۳ ستون) -->
-            <div class="lg:col-span-3 space-y-6">
-                
-                <!-- کارت خوش‌آمدگویی و آمار سریع -->
-                <div class="bg-gradient-to-l from-blue-600 to-indigo-600 rounded-3xl shadow-xl shadow-blue-500/10 p-8 text-white text-right relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h1 class="text-xl sm:text-2xl font-extrabold mb-2">سلام، خوش آمدید! 👋</h1>
-                        <p class="text-blue-100 text-xs sm:text-sm leading-relaxed">از طریق این پنل می‌توانید وضعیت تخفیف‌ها، محصولات ذخیره‌شده و سابقه خریدهای افیلیت خود را مدیریت کنید.</p>
-                    </div>
-                </div>
-
-                <!-- بخش بخش‌های داشبورد -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm text-right">
-                        <span class="text-gray-400 text-xs block mb-1">محصولات نشان‌شده</span>
-                        <span class="text-xl font-extrabold text-blue-600">۰ کالا</span>
-                    </div>
-                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm text-right">
-                        <span class="text-gray-400 text-xs block mb-1">تخفیف‌های فعال استفاده شده</span>
-                        <span class="text-xl font-extrabold text-emerald-600">--</span>
-                    </div>
-                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm text-right">
-                        <span class="text-gray-400 text-xs block mb-1">وضعیت حساب</span>
-                        <span class="text-xl font-extrabold text-indigo-600">تأیید شده</span>
-                    </div>
-                </div>
-
-                <!-- فرم تنظیمات و ویرایش اطلاعات -->
-                <div id="settings" class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm text-right">
-                    <h3 class="font-bold text-gray-900 text-sm mb-4 pb-2 border-b border-slate-100">ویرایش اطلاعات حساب کاربری</h3>
-                    <form action="{{ url_for('edit_profile') }}" method="POST" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] text-gray-500 mb-1">نام و نام خانوادگی</label>
-                                <input type="text" name="name" value="{{ session.get('user_name', '') }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+        <!-- لیست علاقه‌مندی‌ها -->
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">محصولات نشان‌شده (علاقه‌مندی‌ها)</h2>
+            {% if favorite_products %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for product in favorite_products %}
+                        <div class="flex items-center justify-between p-4 border rounded-xl hover:shadow-md transition">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-16 h-16 object-cover rounded-lg">
+                                <div>
+                                    <h3 class="font-medium text-gray-800 text-sm line-clamp-1">{{ product.title }}</h3>
+                                    <p class="text-red-600 font-bold text-sm mt-1">{{ "{:,}".format(product.discount_price) }} تومان</p>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-[11px] text-gray-500 mb-1">شماره موبایل / ایمیل</label>
-                                <input type="text" disabled value="حساب متصل" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-gray-400 cursor-not-allowed">
-                            </div>
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="p-2 text-gray-400 hover:text-red-600">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
                         </div>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20">
-                            ذخیره تغییرات
-                        </button>
-                    </form>
+                    {% endfor %}
                 </div>
-
-            </div>
-
+            {% else %}
+                <p class="text-gray-400 text-center py-8">هنوز محصولی را به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+            {% endif %}
         </div>
-    </main>
-
-    <!-- فوتر -->
-    <footer class="mt-20 border-t border-slate-200 bg-white/50 backdrop-blur-md py-6 text-center text-xs text-gray-500">
-        <div class="container mx-auto px-4">
-            تمامی حقوق محتوا و معرفی محصولات محفوظ است.
+        
+        <div class="text-center mt-6">
+            <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-red-600 text-sm font-medium">بازگشت به صفحه اصلی</a>
         </div>
-    </footer>
-
+    </div>
 </body>
 </html>
