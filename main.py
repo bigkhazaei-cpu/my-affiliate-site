@@ -135,8 +135,11 @@ def user_login():
         try:
             res = supabase.table("users").select("*").eq("email", email).eq("password", password).execute()
             if res.data:
-                session["user_id"] = res.data[0]["id"]
-                session["user_email"] = res.data[0]["email"]
+                user = res.data[0]
+                session["user_id"] = user["id"]
+                session["user_email"] = user["email"]
+                session["user_name"] = user.get("name", "")
+                session["user_phone"] = user.get("phone", "")
                 return redirect(url_for("home"))
         except Exception as e:
             print("Login error:", e)
@@ -157,8 +160,11 @@ def user_register():
             
             res = supabase.table("users").insert({"email": email, "password": password}).execute()
             if res.data:
-                session["user_id"] = res.data[0]["id"]
-                session["user_email"] = res.data[0]["email"]
+                user = res.data[0]
+                session["user_id"] = user["id"]
+                session["user_email"] = user["email"]
+                session["user_name"] = user.get("name", "")
+                session["user_phone"] = user.get("phone", "")
                 return redirect(url_for("home"))
         except Exception as e:
             print("Register error:", e)
@@ -200,6 +206,17 @@ def user_profile():
         return redirect(url_for("user_login"))
     
     user_id = session["user_id"]
+    
+    # همگام‌سازی آخرین اطلاعات کاربر از پایگاه داده
+    try:
+        user_res = supabase.table("users").select("*").eq("id", user_id).execute()
+        if user_res.data:
+            user = user_res.data[0]
+            session["user_name"] = user.get("name", "")
+            session["user_phone"] = user.get("phone", "")
+    except Exception as e:
+        print("Fetch user info error:", e)
+
     favorite_products = []
     try:
         fav_res = supabase.table("favorites").select("product_id").eq("user_id", user_id).execute()
@@ -209,26 +226,40 @@ def user_profile():
             prod_res = supabase.table("products").select("*").in_("id", product_ids).execute()
             favorite_products = prod_res.data if prod_res.data else []
     except Exception as e:
-        print("Profile error:", e)
+        print("Profile favorites error:", e)
         
     return render_template("profile.html", favorite_products=favorite_products)
 
-@app.route("/profile/edit", methods=["POST"])
-def edit_profile():
+@app.route("/profile/update", methods=["POST"])
+def update_profile():
     if "user_id" not in session:
         return redirect(url_for("user_login"))
     
     user_id = session["user_id"]
-    new_email = request.form.get("email")
+    name = request.form.get("name")
+    phone = request.form.get("phone")
     
-    if new_email:
-        try:
-            supabase.table("users").update({"email": new_email}).eq("id", user_id).execute()
-            session["user_email"] = new_email
-        except Exception as e:
-            print("Edit profile error:", e)
+    try:
+        update_data = {}
+        if name is not None:
+            update_data["name"] = name
+        if phone is not None:
+            update_data["phone"] = phone
+            
+        if update_data:
+            supabase.table("users").update(update_data).eq("id", user_id).execute()
+            if name is not None:
+                session["user_name"] = name
+            if phone is not None:
+                session["user_phone"] = phone
+    except Exception as e:
+        print("Update profile error:", e)
             
     return redirect(url_for("user_profile"))
+
+@app.route("/profile/edit", methods=["POST"])
+def edit_profile():
+    return update_profile()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
