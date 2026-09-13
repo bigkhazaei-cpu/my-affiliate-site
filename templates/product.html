@@ -2,98 +2,182 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{{ product.title }} | دیجی‌پلاس</title>
+    <title>{{ product.title }} | فروشگاه</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 font-sans pb-16">
-    <div class="max-w-6xl mx-auto p-4 mt-6">
-        <div class="bg-white rounded-2xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <!-- تصویر محصول -->
-            <div>
-                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-96 object-cover rounded-2xl">
-            </div>
-            <!-- اطلاعات محصول -->
-            <div class="flex flex-col justify-between">
-                <div>
-                    <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{{ product.category }}</span>
-                    <h1 class="text-2xl font-bold text-gray-800 mt-3">{{ product.title }}</h1>
-                    <p class="text-gray-600 mt-4 leading-relaxed text-sm">{{ product.description }}</p>
-                </div>
-                <div class="mt-6 pt-6 border-t flex items-center justify-between">
-                    <div>
-                        <span class="text-gray-400 text-sm line-through block">{{ "{:,}".format(product.price) }} تومان</span>
-                        <span class="text-xl font-extrabold text-red-600">{{ "{:,}".format(product.discount_price) }} تومان</span>
-                    </div>
-                    <button onclick="toggleFavorite({{ product.id }})" class="p-3 border rounded-xl text-gray-500 hover:text-red-600 hover:border-red-600 transition">
-                        <i class="fa-regular fa-heart text-xl"></i>
-                    </button>
-                </div>
+<body class="bg-gray-100 font-sans pb-16">
+
+    <!-- هدر سایت -->
+    <header class="bg-white shadow-xs sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="font-black text-2xl text-red-600 flex items-center gap-2">
+                <i class="fa-solid fa-store"></i> فروشگاه من
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="{{ url_for('view_cart') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping"></i> سبد خرید
+                </a>
+                <a href="{{ url_for('user_profile') }}" class="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-user"></i> حساب کاربری
+                </a>
             </div>
         </div>
+    </header>
 
-        <!-- نظرات کاربران -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">نظرات کاربران</h2>
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- بخش اصلی محصول -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            <!-- فرم ثبت نظر -->
-            <form action="{{ url_for('add_comment', product_id=product.id) }}" method="POST" class="mb-8 bg-gray-50 p-4 rounded-xl">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="text" name="author" placeholder="نام شما" required class="px-4 py-2 bg-white border rounded-xl text-sm">
-                    <select name="rating" class="px-4 py-2 bg-white border rounded-xl text-sm">
-                        <option value="5">۵ ستاره (عالی)</option>
-                        <option value="4">۴ ستاره (خوب)</option>
-                        <option value="3">۳ ستاره (متوسط)</option>
-                        <option value="2">۲ ستاره (ضعیف)</option>
-                        <option value="1">۱ ستاره (بسیار بد)</option>
-                    </select>
+            <!-- تصویر محصول (سمت راست در RTL) -->
+            <div class="lg:col-span-5 relative group">
+                <div class="absolute top-4 right-4 z-10">
+                    <span class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-xs">
+                        {{ product.category }}
+                    </span>
                 </div>
-                <textarea name="content" rows="3" placeholder="نظر خود را درباره این محصول بنویسید..." required class="w-full px-4 py-2 bg-white border rounded-xl text-sm mb-4"></textarea>
-                <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm hover:bg-red-700 transition">ارسال نظر</button>
-            </form>
+                <div class="w-full h-80 md:h-[400px] rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    {% else %}
+                        <i class="fa-solid fa-image text-gray-300 text-6xl"></i>
+                    {% endif %}
+                </div>
+            </div>
 
-            <!-- لیست نظرات -->
-            <div class="space-y-4">
-                {% for comment in comments %}
-                    <div class="border-b pb-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-gray-800 text-sm">{{ comment.author }}</span>
-                            <span class="text-yellow-500 text-xs">⭐ {{ comment.rating }} از ۵</span>
+            <!-- اطلاعات و خرید محصول (سمت چپ در RTL) -->
+            <div class="lg:col-span-7 flex flex-col justify-between h-full space-y-6">
+                <div class="space-y-4">
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-800 leading-tight">{{ product.title }}</h1>
+                    <p class="text-gray-500 text-sm leading-relaxed">{{ product.description or 'توضیحاتی برای این محصول ثبت نشده است.' }}</p>
+                </div>
+
+                <div class="border-t border-gray-100 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        {% if product.price and product.price > product.discount_price %}
+                            <div class="text-gray-400 text-sm line-through">{{ "{:,}".format(product.price) }} تومان</div>
+                        {% endif %}
+                        <div class="text-2xl md:text-3xl font-black text-red-600">
+                            {{ "{:,}".format(product.discount_price) }} <span class="text-sm font-normal text-gray-500">تومان</span>
                         </div>
-                        <p class="text-gray-600 text-sm">{{ comment.content }}</p>
                     </div>
-                {% else %}
-                    <p class="text-gray-400 text-center py-4">اولین نفری باشید که برای این محصول نظر می‌دهد.</p>
-                {% endfor %}
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleFavorite({{ product.id }})" id="fav-btn-{{ product.id }}" class="w-12 h-12 rounded-2xl border border-gray-200 flex items-center justify-center text-gray-600 hover:border-red-600 hover:text-red-600 transition">
+                            <i class="fa-regular fa-heart text-lg"></i>
+                        </button>
+                        <button onclick="addToCart({{ product.id }})" class="flex-1 sm:flex-none px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-lg shadow-red-600/20 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> افزودن به سبد خرید
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- محصولات مرتبط -->
-        {% if related_products %}
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">محصولات مشابه</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {% for item in related_products %}
-                    <a href="{{ url_for('product_detail', product_id=item.id) }}" class="border rounded-xl p-4 hover:shadow-md transition block">
-                        <img src="{{ item.image_url }}" alt="{{ item.title }}" class="w-full h-36 object-cover rounded-lg mb-3">
-                        <h3 class="font-medium text-gray-800 text-sm line-clamp-1">{{ item.title }}</h3>
-                        <p class="text-red-600 font-bold text-sm mt-2">{{ "{:,}".format(item.discount_price) }} تومان</p>
-                    </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
+        <!-- دو ستون پایین: نظرات کاربران و محصولات مشابه -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- نظرات کاربران -->
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-comments text-red-600"></i> نظرات کاربران
+                    </h2>
 
+                    <!-- فرم ثبت نظر -->
+                    <form action="{{ url_for('add_comment', product_id=product.id) }}" method="POST" class="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="author" placeholder="نام شما" required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-hidden focus:border-red-600 transition">
+                            <select name="rating" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-hidden focus:border-red-600 transition">
+                                <option value="5">⭐⭐⭐⭐⭐ ۵ ستاره (عالی)</option>
+                                <option value="4">⭐⭐⭐⭐ ۴ ستاره (خوب)</option>
+                                <option value="3">⭐⭐⭐ ۳ ستاره (متوسط)</option>
+                                <option value="2">⭐⭐ ۲ ستاره (ضعیف)</option>
+                                <option value="1">⭐ ۱ ستاره (خیلی بد)</option>
+                            </select>
+                        </div>
+                        <textarea name="content" rows="3" placeholder="نظر خود را درباره این محصول بنویسید..." required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-hidden focus:border-red-600 transition"></textarea>
+                        <button type="submit" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition">ثبت نظر</button>
+                    </form>
+
+                    <!-- لیست نظرات -->
+                    <div class="space-y-4">
+                        {% if comments %}
+                            {% for comment in comments %}
+                                <div class="p-4 rounded-2xl border border-gray-100 bg-white space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-gray-800 text-sm">{{ comment.author }}</span>
+                                        <div class="text-amber-400 text-xs">
+                                            {% for i in range(comment.rating) %}★{% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">{{ comment.content }}</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-gray-400 text-sm text-center py-6">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- محصولات مشابه -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-red-600"></i> محصولات مشابه
+                    </h2>
+                    <div class="space-y-4">
+                        {% if related_products %}
+                            {% for rp in related_products %}
+                                <a href="{{ url_for('product_detail', product_id=rp.id) }}" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 border border-gray-50 transition group">
+                                    <img src="{{ rp.image_url }}" alt="{{ rp.title }}" class="w-16 h-16 object-cover rounded-xl shrink-0">
+                                    <div class="overflow-hidden">
+                                        <h4 class="font-bold text-gray-800 text-sm truncate group-hover:text-red-600 transition">{{ rp.title }}</h4>
+                                        <div class="text-red-600 font-bold text-xs mt-1">{{ "{:,}".format(rp.discount_price) }} تومان</div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-gray-400 text-xs text-center py-4">محصول مشابهی یافت نشد.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- جاوااسکریپت دکمه‌ها -->
     <script>
-        function toggleFavorite(productId) {
-            fetch(`/toggle-favorite/${productId}`, { method: 'POST' })
+        function addToCart(productId) {
+            fetch('/cart/add/' + productId, { method: 'POST' })
             .then(res => res.json())
             .then(data => {
-                if(data.status === 'unauthorized') {
+                if(data.status === 'success') {
+                    alert('محصول با موفقیت به سبد خرید اضافه شد.');
+                } else if(data.status === 'unauthorized') {
                     window.location.href = '/user-login';
                 } else {
-                    alert('وضعیت علاقه‌مندی تغییر کرد.');
+                    alert('خطا در افزودن به سبد خرید.');
+                }
+            });
+        }
+
+        function toggleFavorite(productId) {
+            fetch('/toggle-favorite/' + productId, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                const btn = document.getElementById('fav-btn-' + productId);
+                if(data.status === 'added') {
+                    btn.classList.add('text-red-600', 'border-red-600');
+                    btn.innerHTML = '<i class="fa-solid fa-heart text-lg"></i>';
+                } else if(data.status === 'removed') {
+                    btn.classList.remove('text-red-600', 'border-red-600');
+                    btn.innerHTML = '<i class="fa-regular fa-heart text-lg"></i>';
+                } else if(data.status === 'unauthorized') {
+                    window.location.href = '/user-login';
                 }
             });
         }
