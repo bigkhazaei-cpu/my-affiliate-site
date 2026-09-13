@@ -1,66 +1,83 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فروشگاه و بررسی محصولات</title>
+    <title>دیجی‌پلاس - فروشگاه و بررسی محصولات</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <header>
-        <h1>فروشگاه و بررسی محصولات</h1>
-        <p>بهترین پیشنهادها و بررسی‌های تخصصی</p>
+    <div class="digi-topbar">
+        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 🔥
+    </div>
+
+    <header class="digi-header">
+        <div class="header-right">
+            <a href="/" class="site-logo">دیجی‌پلاس</a>
+            <form action="/" method="GET" class="search-box">
+                <svg style="width:20px; color: #707579;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" name="search" placeholder="جستجو در میان محصولات..." value="{{ search_query }}">
+            </form>
+        </div>
+        <div class="header-left">
+            <a href="/admin" class="btn-admin">پنل مدیریت</a>
+        </div>
     </header>
 
+    <nav class="digi-navbar">
+        <a href="/">همه محصولات</a>
+        {% for cat in categories %}
+            <a href="/?category={{ cat }}">{{ cat }}</a>
+        {% endfor %}
+    </nav>
+
     <div class="container">
-        <!-- بخش جستجو، فیلتر و مرتب‌سازی -->
-        <div class="search-filter-container">
-            <form method="GET" action="{{ url_for('home') }}">
-                <input type="text" name="search" placeholder="جستجوی محصول..." value="{{ search_query }}">
-                <select name="category">
-                    <option value="">همه دسته‌بندی‌ها</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
-                    {% endfor %}
-                </select>
-                <select name="sort">
+        <!-- فیلتر و مرتب‌سازی اضافی -->
+        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; border: 1px solid #e0e0e0;">
+            <form method="GET" action="/" style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap;">
+                <input type="hidden" name="search" value="{{ search_query }}">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <select name="sort" class="form-control" style="width: 200px; margin-bottom: 0;">
                     <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>جدیدترین</option>
                     <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>ارزان‌ترین</option>
                     <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>گران‌ترین</option>
                 </select>
-                <button type="submit" class="btn">اعمال فیلتر</button>
+                <button type="submit" class="btn-admin" style="background: #ef4056; color: white; border: none; cursor: pointer;">اعمال مرتب‌سازی</button>
             </form>
-            <a href="{{ url_for('admin') }}" class="btn btn-success">پنل ادمین</a>
         </div>
 
-        <!-- لیست محصولات (گرید) -->
+        <!-- گرید محصولات -->
         <div class="products-grid">
             {% if products %}
                 {% for product in products %}
                     <div class="product-card">
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image">
-                        {% else %}
-                            <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
+                        {% if product.discount_price and product.discount_price > 0 and product.price and product.price > product.discount_price %}
+                            <span class="discount-badge">
+                                {% set diff = product.price - product.discount_price %}
+                                {% set pct = (diff / product.price * 100)|int %}
+                                {{ pct }}%
+                            </span>
                         {% endif %}
-                        <div class="product-info">
-                            <span class="product-category">{{ product.category or 'عمومی' }}</span>
-                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-title">{{ product.title }}</a>
-                            <p class="product-desc">{{ product.description[:90] if product.description else '' }}...</p>
-                            <div class="product-footer">
-                                <div class="price-box">
-                                    {% if product.discount_price and product.discount_price > 0 %}
-                                        <span class="original-price">{{ product.price }}</span>
-                                        <span class="discount-price">{{ product.discount_price }} تومان</span>
-                                    {% else %}
-                                        <span class="discount-price">{{ product.price if product.price > 0 else 'توافقی' }}</span>
-                                    {% endif %}
-                                </div>
-                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn">مشاهده و خرید</a>
-                            </div>
+
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-img">
+                        {% else %}
+                            <div class="product-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
+                        {% endif %}
+
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-title">{{ product.title }}</a>
+                        
+                        <div class="price-box">
+                            {% if product.discount_price and product.discount_price > 0 %}
+                                <div class="old-price">{{ product.price }} تومان</div>
+                                <div class="new-price">{{ product.discount_price }} <span class="currency">تومان</span></div>
+                            {% else %}
+                                <div class="new-price">{{ product.price if product.price > 0 else 'توافقی' }} <span class="currency">{% if product.price > 0 %}تومان{% endif %}</span></div>
+                            {% endif %}
                         </div>
+
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn-card">مشاهده و خرید</a>
                     </div>
                 {% endfor %}
             {% else %}
@@ -68,12 +85,13 @@
             {% endif %}
         </div>
 
-        <!-- صفحه‌بندی (Pagination) -->
+        <!-- صفحه‌بندی -->
         {% if total_pages > 1 %}
             <div style="display: flex; justify-content: center; gap: 8px; margin-top: 40px;">
                 {% for p in range(1, total_pages + 1) %}
                     <a href="{{ url_for('home', page=p, search=search_query, category=selected_category, sort=sort_by) }}" 
-                       class="btn {% if p != current_page %}" style="background-color: #cbd5e1; color: #1e293b;{% else %}"{% endif %}">
+                       class="btn-admin {% if p == current_page %}active{% endif %}" 
+                       style="{% if p == current_page %}background: #ef4056; color: white; border-color: #ef4056;{% endif %}">
                         {{ p }}
                     </a>
                 {% endfor %}
