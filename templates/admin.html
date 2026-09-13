@@ -2,76 +2,64 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت - دیجی‌پلاس</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>پنل مدیریت | دیجی‌پلاس</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-
-    <div class="digi-topbar">
-        پنل مدیریت و افزودن محصولات
-    </div>
-
-    <header class="digi-header">
-        <div class="header-right">
-            <a href="/" class="site-logo">دیجی‌پلاس (مدیریت)</a>
+<body class="bg-gray-100 font-sans p-6">
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center">
+            <h1 class="font-bold text-sm text-red-600">پنل مدیریت و افزودن محصولات</h1>
+            <div class="flex gap-2">
+                <a href="/" class="bg-gray-100 px-3 py-1.5 rounded text-xs font-bold text-gray-700">مشاهده سایت</a>
+                <a href="/logout" class="bg-red-50 text-red-600 px-3 py-1.5 rounded text-xs font-bold">خروج</a>
+            </div>
         </div>
-        <div class="header-left">
-            <a href="/" class="btn-admin">مشاهده سایت</a>
-            <a href="/logout" class="btn-admin" style="color: #ef4056;">خروج</a>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="admin-card">
-            <h2 style="margin-bottom: 20px; font-size: 18px;">افزودن محصول جدید</h2>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="text" name="title" placeholder="عنوان محصول" required class="form-control">
-                <input type="text" name="category" placeholder="دسته‌بندی (مثلاً دیجیتال، پوشاک)" required class="form-control">
-                <input type="number" step="any" name="price" placeholder="قیمت اصلی (تومان)" class="form-control">
-                <input type="number" step="any" name="discount_price" placeholder="قیمت با تخفیف (تومان)" class="form-control">
-                <textarea name="description" rows="4" placeholder="توضیحات و بررسی محصول..." class="form-control"></textarea>
-                <input type="url" name="affiliate_link" placeholder="لینک خرید / افیلیت (https://...)" class="form-control">
-                
-                <label style="display: block; margin-bottom: 8px; font-size: 13px; color: #62666d;">تصویر محصول:</label>
-                <input type="file" name="image" class="form-control">
-                
-                <button type="submit" class="btn-admin" style="background: #00bf6f; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; cursor: pointer;">ثبت و انتشار محصول</button>
+        <!-- فرم افزودن محصول -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-xs text-gray-800 mb-4">افزودن محصول جدید</h3>
+            <form method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <input type="text" name="title" placeholder="عنوان محصول" required class="border rounded p-2">
+                <input type="text" name="category" placeholder="دسته‌بندی (مثلاً دیجیتال، پوشاک)" required class="border rounded p-2">
+                <input type="number" name="price" placeholder="قیمت اصلی (تومان)" required class="border rounded p-2">
+                <input type="number" name="discount_price" placeholder="قیمت با تخفیف (تومان)" required class="border rounded p-2">
+                <input type="url" name="affiliate_link" placeholder="لینک افیلیت (https://...)" required class="border rounded p-2 sm:col-span-2">
+                <input type="url" name="image_url" placeholder="لینک تصویر محصول (https://...)" required class="border rounded p-2 sm:col-span-2">
+                <textarea name="description" placeholder="توضیحات و بررسی محصول..." rows="3" required class="border rounded p-2 sm:col-span-2"></textarea>
+                <button type="submit" class="bg-green-600 text-white py-2.5 rounded font-bold sm:col-span-2 hover:bg-green-700">ثبت و انتشار محصول</button>
             </form>
         </div>
 
-        <div class="admin-card">
-            <h2 style="margin-bottom: 20px; font-size: 18px;">محصولات ثبت‌شده</h2>
-            <div style="overflow-x: auto;">
-                <table class="admin-table">
+        <!-- لیست محصولات ثبت شده -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-xs text-gray-800 mb-4">محصولات ثبت‌شده در دیتابیس</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs border-collapse">
                     <thead>
-                        <tr>
-                            <th>شناسه</th>
-                            <th>عنوان</th>
-                            <th>دسته‌بندی</th>
-                            <th>قیمت</th>
-                            <th>عملیات</th>
+                        <tr class="bg-gray-50 border-b">
+                            <th class="p-3 text-right">شناسه</th>
+                            <th class="p-3 text-right">عنوان</th>
+                            <th class="p-3 text-right">دسته‌بندی</th>
+                            <th class="p-3 text-right">قیمت تخفیف‌خورده</th>
+                            <th class="p-3 text-center">عملیات</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for product in products %}
-                            <tr>
-                                <td>{{ product.id }}</td>
-                                <td>{{ product.title }}</td>
-                                <td>{{ product.category or '-' }}</td>
-                                <td>{{ product.discount_price if product.discount_price and product.discount_price > 0 else product.price }} تومان</td>
-                                <td>
-                                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" onsubmit="return confirm('آیا از حذف این محصول مطمئن هستید؟');">
-                                        <button type="submit" style="background: #ef4056; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">حذف</button>
-                                    </form>
-                                </td>
-                            </tr>
+                        {% for p in products %}
+                        <tr class="border-b">
+                            <td class="p-3">{{ p.id }}</td>
+                            <td class="p-3 font-bold">{{ p.title }}</td>
+                            <td class="p-3">{{ p.category }}</td>
+                            <td class="p-3 text-red-600 font-bold">{{\ "{:,}\".format(p.discount_price) }} تومان</td>
+                            <td class="p-3 text-center">
+                                <a href="/admin/delete/{{ p.id }}" onclick="return confirm('آیا از حذف این محصول مطمئن هستید؟')" class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">حذف</a>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
 </body>
 </html>
