@@ -15,7 +15,6 @@ body {
     line-height: 1.6;
 }
 
-/* --- هدر دیجی‌کالایی --- */
 .digi-topbar {
     background-color: #ef4056;
     color: white;
@@ -89,7 +88,6 @@ body {
     background-color: #f0f0f1;
 }
 
-/* منوی دسته‌بندی زیر هدر */
 .digi-navbar {
     background: #ffffff;
     padding: 0 30px;
@@ -112,7 +110,6 @@ body {
     border-bottom-color: #ef4056;
 }
 
-/* --- محتوای اصلی و گرید محصولات --- */
 .container {
     max-width: 1250px;
     margin: 25px auto;
@@ -215,7 +212,6 @@ body {
     background: #d82c42;
 }
 
-/* --- صفحه جزئیات محصول (Product Detail) --- */
 .product-detail-container {
     background: #fff;
     border-radius: 12px;
@@ -264,7 +260,6 @@ body {
     background: #009e5b;
 }
 
-/* فرم‌ها و جدول پنل ادمین */
 .admin-card {
     background: white;
     border-radius: 12px;
