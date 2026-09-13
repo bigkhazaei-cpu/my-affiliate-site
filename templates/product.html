@@ -30,7 +30,7 @@
 
     <main class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- کارت اصلی محصول -->
-        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-center">
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-center text-right">
             <div class="bg-slate-50 border border-slate-100 rounded-2xl overflow-hidden flex items-center justify-center h-80 shadow-inner">
                 {% if product.image_url %}
                     <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover rounded-xl">
@@ -61,7 +61,7 @@
         </div>
 
         <!-- بخش نظرات -->
-        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 mb-8">
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 mb-8 text-right">
             <h3 class="text-xl font-bold text-gray-900 mb-6">نظرات کاربران</h3>
             
             <div class="space-y-4 mb-8">
@@ -111,7 +111,7 @@
 
         <!-- محصولات مرتبط -->
         {% if related_products %}
-            <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8">
+            <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 text-right">
                 <h3 class="text-xl font-bold text-gray-900 mb-6">محصولات مشابه</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {% for rp in related_products %}
@@ -125,7 +125,9 @@
                                         <span class="text-gray-400 text-xs font-medium">بدون تصویر</span>
                                     {% endif %}
                                 </div>
-                                <span class="inline-block bg-blue-50 text-blue-600 text-[10px] px-2.5 py-0.5 rounded-full font-semibold mb-2">{{ rp.category }}</span>
+                                <div class="mb-2">
+                                    <span class="inline-block bg-blue-50 text-blue-600 text-[10px] px-2.5 py-0.5 rounded-full font-semibold">{{ rp.category }}</span>
+                                </div>
                                 <h4 class="font-bold text-gray-800 text-sm mb-2 line-clamp-1">{{ rp.title }}</h4>
                                 <span class="text-emerald-600 font-extrabold text-sm block mb-4">{{ rp.discount_price }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
                             </div>
