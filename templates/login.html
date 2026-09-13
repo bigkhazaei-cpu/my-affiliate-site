@@ -22,6 +22,15 @@
             width: 100%;
             max-width: 400px;
         }
+        .alert-error {
+            background-color: #fadbd8;
+            color: #c0392b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -29,12 +38,19 @@
     <div class="login-box">
         <h2 style="margin-bottom: 20px; text-align: center; color: #2c3e50;">ورود ادمین</h2>
         
+        <!-- نمایش پیام خطا در صورت اشتباه بودن رمز عبور -->
+        {% if get_flashed_messages() %}
+            <div class="alert-error">
+                رمز عبور وارد شده اشتباه است!
+            </div>
+        {% endif %}
+
         <form method="POST">
             <div class="form-group" style="margin-bottom: 15px;">
                 <label style="display: block; margin-bottom: 5px; color: #34495e;">رمز عبور</label>
                 <input type="password" name="password" required placeholder="رمز عبور را وارد کنید" style="width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 5px; box-sizing: border-box;">
             </div>
-            <button type="submit" class="btn" style="width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">ورود</button>
+            <button type="submit" class="btn" style="width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">ورود</button>
         </form>
 
         <p style="text-align: center; margin-top: 15px;">
