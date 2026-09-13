@@ -90,7 +90,7 @@ def add_comment(product_id):
             print("Error adding comment:", e)
     return redirect(url_for("product_detail", product_id=product_id))
 
-# --- صفحه مقایسه محصولات (پشتیبانی از دریافت محصولات با آی‌دی) ---
+# --- صفحه مقایسه محصولات ---
 @app.route("/compare")
 def compare_products():
     ids_param = request.args.get("ids", "")
@@ -271,7 +271,7 @@ def user_logout():
 def logout():
     return redirect(url_for("user_logout"))
 
-@app.route("/toggle-favorite/<int:product_id>", methods/=["POST"])
+@app.route("/toggle-favorite/<int:product_id>", methods=["POST"])
 def toggle_favorite(product_id):
     if "user_id" not in session:
         return jsonify({"status": "unauthorized"})
@@ -315,10 +315,6 @@ def user_profile():
         print("Profile favorites error:", e)
         
     return render_template("profile.html", favorite_products=favorite_products)
-
-@app.route("/profile/update", methods=["POST"])
-def update_parse_profile():
-    pass
 
 @app.route("/profile/update", methods=["POST"])
 def update_profile():
