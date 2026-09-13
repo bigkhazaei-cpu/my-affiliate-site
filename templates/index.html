@@ -9,25 +9,27 @@
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Tahoma, sans-serif; text-align: right; }
+        body { font-family: Tahoma, sans-serif; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen pb-24">
 
     <!-- هدر سایت -->
     <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- سمت راست هدر: لوگو و منو -->
+            <div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-start">
                 <a href="/" class="text-xl font-bold text-red-600 flex items-center gap-2">
                     <i class="fas fa-store"></i> فروشگاه من
                 </a>
-                <nav class="hidden md:flex gap-4 text-sm text-gray-600">
+                <nav class="hidden md:flex gap-6 text-sm text-gray-600">
                     <a href="/" class="hover:text-red-600 transition">صفحه اصلی</a>
                     <a href="/blog" class="hover:text-red-600 transition">مقالات و بلاگ</a>
                 </nav>
             </div>
             
-            <div class="flex items-center gap-2 flex-wrap justify-end">
+            <!-- سمت چپ هدر: دکمه‌های اکشن -->
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
                 <a href="/compare" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
                     <i class="fas fa-balance-scale"></i> مقایسه
                 </a>
@@ -49,12 +51,13 @@
         
         <!-- بخش جستجو و فیلتر -->
         <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
-            <form action="/" method="GET" class="w-full md:w-1/2 flex gap-2">
+            <form action="/" method="GET" class="w-full md:w-1/2 flex items-center gap-2">
                 <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجوی محصول..." class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-red-500">
                 <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm transition hover:bg-red-700 shrink-0">جستجو</button>
             </form>
             
-            <div class="flex gap-2 text-xs flex-wrap">
+            <div class="flex gap-2 text-xs flex-wrap w-full md:w-auto justify-end">
+                <span class="text-gray-400 self-center ml-1">مرتب‌سازی:</span>
                 <a href="/?sort=newest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">جدیدترین</a>
                 <a href="/?sort=cheapest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">ارزان‌ترین</a>
                 <a href="/?sort=expensive" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">گران‌ترین</a>
@@ -194,6 +197,7 @@
             }
         }
 
+        function clear_compare() { clearCompare(); }
         function clearCompare() {
             localStorage.removeItem('compare_products');
             updateCompareUI();
