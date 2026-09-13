@@ -90,20 +90,66 @@ def add_comment(product_id):
             print("Error adding comment:", e)
     return redirect(url_for("product_detail", product_id=product_id))
 
-@app.route("/compare")
-def compare_products():
-    ids_param = request.args.get("ids", "")
-    products = []
-    if ids_param:
-        try:
-            id_list = [int(i) for i in ids_param.split(",") if i.isdigit()]
-            if id_list:
-                res = supabase.table("products").select("*").in_("id", id_list).execute()
-                products = res.data if res.data else []
-        except ValueError:
-            pass
-    return render_template("compare.html", products=products)
+# --- بخش سبد خرید (Cart) ---
+@app.route("/cart")
+def view_cart():
+    if "user_id" not in session:
+        return redirect(url_for("user_login"))
+    
+    user_id = session["user_id"]
+    cart_items = []
+    total_price = 0
+    
+    try:
+        res = supabase.table("cart").select("id, quantity, product_id").eq("user_id", user_id).execute()
+        items = res.data if res.data else []
+        
+        for item in items:
+            prod_res = supabase.table("products").select("*").eq("id", item["product_id"]).execute()
+            if prod_res.data:
+                product = prod_res.data[0]
+                subtotal = product["discount_price"] * item["quantity"]
+                total_price += subtotal
+                cart_items.append({
+                    "cart_id": item["id"],
+                    "product": product,
+                    "quantity": item["quantity"],
+                    "subtotal": subtotal
+                })
+    except Exception as e:
+        print("Error fetching cart:", e)
+        
+    return render_template("cart.html", cart_items=cart_items, total_price=total_price)
 
+@app.route("/cart/add/<int:product_id>", methods=["POST"])
+def add_to_cart(product_id):
+    if "user_id" not in session:
+        return jsonify({"status": "unauthorized"})
+    
+    user_id = session["user_id"]
+    try:
+        existing = supabase.table("cart").select("*").eq("user_id", user_id).eq("product_id", product_id).execute()
+        if existing.data:
+            new_qty = existing.data[0]["quantity"] + 1
+            supabase.table("cart").update({"quantity": new_qty}).eq("id", existing.data[0]["id"]).execute()
+        else:
+            supabase.table("cart").insert({"user_id": user_id, "product_id": product_id, "quantity": 1}).execute()
+        return jsonify({"status": "success"})
+    except Exception as e:
+        print("Add to cart error:", e)
+        return jsonify({"status": "error"})
+
+@app.route("/cart/remove/<int:cart_id>", methods=["POST"])
+def remove_from_cart(cart_id):
+    if "user_id" not in session:
+        return redirect(url_for("user_login"))
+    try:
+        supabase.table("cart").delete().eq("id", cart_id).execute()
+    except Exception as e:
+        print("Remove from cart error:", e)
+    return redirect(url_for("view_cart"))
+
+# --- بخش بلاگ و مقالات ---
 @app.route("/blog")
 def blog_list():
     try:
@@ -113,6 +159,32 @@ def blog_list():
         print("Error fetching blog posts:", e)
         posts = []
     return render_template("blog.html", posts=posts)
+
+@app.route("/blog/create", methods=["GET", "POST"])
+def create_post():
+    if "user_id" not in session:
+        return redirect(url_for("user_login"))
+        
+    if request.method == "POST":
+        title = request.form.get("title")
+        content = request.form.get("content")
+        image_url = request.form.get("image_url")
+        author = session.get("user_name", session.get("user_email", "مدیر"))
+        
+        if title and content:
+            try:
+                supabase.table("posts").insert({
+                    "title": title,
+                    "content": content,
+                    "image_url": image_url,
+                    "author": author
+                }).execute()
+                return redirect(url_for("blog_list"))
+            except Exception as e:
+                print("Error creating post:", e)
+                return render_template("create_post.html", error="خطا در ثبت مقاله. لطفاً مجدد تلاش کنید.")
+                
+    return render_template("create_post.html")
 
 @app.route("/blog/<int:post_id>")
 def blog_detail(post_id):
@@ -126,6 +198,7 @@ def blog_detail(post_id):
         return redirect(url_for("blog_list"))
     return render_template("blog_detail.html", post=post)
 
+# --- احراز هویت و حساب کاربری ---
 @app.route("/user-login", methods=["GET", "POST"])
 def user_login():
     if request.method == "POST":
@@ -189,7 +262,6 @@ def toggle_favorite(product_id):
     user_id = session["user_id"]
     try:
         check = supabase.table("favorites").select("*").eq("user_id", user_id).eq("product_id", product_id).execute()
-        
         if check.data:
             supabase.table("favorites").delete().eq("user_id", user_id).eq("product_id", product_id).execute()
             return jsonify({"status": "removed"})
@@ -206,8 +278,6 @@ def user_profile():
         return redirect(url_for("user_login"))
     
     user_id = session["user_id"]
-    
-    # همگام‌سازی آخرین اطلاعات کاربر از پایگاه داده
     try:
         user_res = supabase.table("users").select("*").eq("id", user_id).execute()
         if user_res.data:
@@ -221,7 +291,6 @@ def user_profile():
     try:
         fav_res = supabase.table("favorites").select("product_id").eq("user_id", user_id).execute()
         product_ids = [item["product_id"] for item in fav_res.data] if fav_res.data else []
-        
         if product_ids:
             prod_res = supabase.table("products").select("*").in_("id", product_ids).execute()
             favorite_products = prod_res.data if prod_res.data else []
@@ -256,10 +325,6 @@ def update_profile():
         print("Update profile error:", e)
             
     return redirect(url_for("user_profile"))
-
-@app.route("/profile/edit", methods=["POST"])
-def edit_profile():
-    return update_profile()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
