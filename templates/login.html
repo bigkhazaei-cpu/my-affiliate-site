@@ -2,20 +2,45 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ورود کاربر | دیجی‌پلاس</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به حساب کاربری</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style> body { font-family: 'Vazirmatn', sans-serif; } </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-2xl shadow-sm border w-96 text-center">
-        <h2 class="text-base font-bold text-red-600 mb-4">ورود به حساب کاربری</h2>
-        {% if error %}<p class="text-red-500 text-xs mb-3">{{ error }}</p>{% endif %}
-        <form method="POST" class="space-y-4 text-xs">
-            <input type="email" name="email" placeholder="ایمیل..." required class="w-full border rounded p-2">
-            <input type="password" name="password" placeholder="رمز عبور..." required class="w-full border rounded p-2">
-            <button type="submit" class="w-full bg-red-600 text-white py-2.5 rounded font-bold">ورود</button>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen px-4">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-md w-full">
+        <div class="text-center mb-8">
+            <a href="{{ url_for('home') }}" class="text-2xl font-black text-blue-600 tracking-tight">فروشگاه من</a>
+            <h1 class="text-xl font-bold text-gray-800 mt-3">ورود به حساب کاربری</h1>
+            <p class="text-sm text-gray-400 mt-1">لطفاً اطلاعات خود را وارد کنید</p>
+        </div>
+
+        {% if error %}
+            <div class="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 text-center">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">ایمیل</label>
+                <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-sm transition">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رمز عبور</label>
+                <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-sm transition">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm">
+                ورود
+            </button>
         </form>
-        <p class="mt-4 text-xs text-gray-500">حساب ندارید؟ <a href="/register" class="text-blue-600 font-bold">ثبت‌نام کنید</a></p>
-        <a href="/" class="block mt-2 text-xs text-gray-400">← بازگشت به صفحه اصلی</a>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            حساب کاربری ندارید؟ <a href="{{ url_for('user_register') }}" class="text-blue-600 font-semibold hover:underline">ثبت‌نام کنید</a>
+        </p>
     </div>
+
 </body>
 </html>
