@@ -166,12 +166,40 @@ def remove_from_cart(cart_id):
         print("Remove from cart error:", e)
     return redirect(url_for("view_cart"))
 
-# --- بخش بلاگ و مقالات ---
+# --- بخش بلاگ و مقالات (همراه با درج خودکار نمونه‌ها) ---
 @app.route("/blog")
 def blog_list():
     try:
         res = supabase.table("posts").select("*").order("id", desc=True).execute()
         posts = res.data if res.data else []
+        
+        if not posts:
+            sample_posts = [
+                {
+                    "title": "راهنمای خرید بهترین کفش پیاده‌روی و ورزشی مردانه",
+                    "content": "انتخاب یک کفش پیاده‌روی مناسب نقش بسیار مهمی در سلامتی زانوها و ستون فقرات دارد. در این مقاله به بررسی ویژگی‌های یک کفش استاندارد از جمله جنس زیره، کپسول هوا و تنفس‌پذیری رویه می‌پردازیم تا بهترین انتخاب را داشته باشید.",
+                    "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+                    "author": "مدیر سایت"
+                },
+                {
+                    "title": "۵ نکته طلایی برای نگهداری از لباس‌های ورزشی و کتونی",
+                    "content": "لباس‌ها و کتونی‌های ورزشی به دلیل نوع الیاف خاص خود نیازمند مراقبت ویژه‌ای هستند. شستشو با آب داغ یا استفاده از خشک‌کن می‌تواند به بافت آن‌ها آسیب جدی بزند. در اینجا روش‌های اصولی شستشو و نگهداری را مرور می‌کنیم.",
+                    "image_url": "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111",
+                    "author": "تیم تحریریه"
+                },
+                {
+                    "title": "چگونه استایل اسپرت جذاب‌تری داشته باشیم؟",
+                    "content": "ترکیب رنگ‌ها و استفاده درست از کتونی‌ها در کنار هودی و شلوار استایل‌های روزمره، تاثیر زیادی روی ظاهر شما دارد. در این مقاله اصول ست کردن لباس‌های اسپرت را بررسی کرده‌ایم.",
+                    "image_url": "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8",
+                    "author": "ادمین بلاگ"
+                }
+            ]
+            for post in sample_posts:
+                supabase.table("posts").insert(post).execute()
+            
+            res = supabase.table("posts").select("*").order("id", desc=True).execute()
+            posts = res.data if res.data else []
+            
     except Exception as e:
         print("Error fetching blog posts:", e)
         posts = []
