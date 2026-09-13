@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فروشگاه من</title>
+    <title>فروشگاه من | مرجع خرید آنلاین</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
@@ -12,116 +12,188 @@
         body { font-family: Tahoma, sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen pb-24">
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen pb-24">
 
-    <!-- هدر سایت اصلاح شده -->
+    <!-- نوار بالایی (Top Bar) -->
+    <div class="bg-gray-800 text-gray-300 text-xs py-2 hidden md:block">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <div class="flex gap-6">
+                <span><i class="fas fa-phone-alt ml-1 text-red-500"></i> پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸</span>
+                <span><i class="fas fa-envelope ml-1 text-red-500"></i> info@myshop.com</span>
+            </div>
+            <div class="flex gap-4">
+                <a href="/blog" class="hover:text-white transition">مجله آموزشی و بلاگ</a>
+                <a href="#" class="hover:text-white transition">درباره ما</a>
+                <a href="#" class="hover:text-white transition">تماس با ما</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- هدر اصلی فروشگاه (مدل دیجی‌کالا) -->
     <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-row justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             
-            <!-- بخش راست هدر: لوگو و منو -->
-            <div class="flex items-center gap-6">
-                <a href="/" class="text-xl font-bold text-red-600 flex items-center gap-2">
+            <!-- لوگو و منوی موبایل -->
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <a href="/" class="text-2xl font-black text-red-600 flex items-center gap-2">
                     <i class="fas fa-store"></i> فروشگاه من
                 </a>
-                <nav class="hidden md:flex gap-4 text-sm text-gray-600">
-                    <a href="/" class="hover:text-red-600 transition">صفحه اصلی</a>
-                    <a href="/blog" class="hover:text-red-600 transition">مقالات و بلاگ</a>
-                </nav>
             </div>
             
-            <!-- بخش چپ هدر: دکمه‌ها و حساب کاربری -->
-            <div class="flex items-center gap-2">
-                <a href="/compare" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
-                    <i class="fas fa-balance-scale"></i> مقایسه
-                </a>
-                <a href="/cart" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
-                    <i class="fas fa-shopping-cart"></i> سبد خرید
-                </a>
-                {% if session.get('user_id') %}
-                    <a href="/profile" class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-medium transition">حساب کاربری</a>
-                    <a href="/user-logout" class="text-xs text-gray-500 hover:text-red-600 transition">خروج</a>
-                {% else %}
-                    <a href="/user-login" class="text-xs bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">ورود / ثبت‌نام</a>
-                {% endif %}
+            <!-- نوار جستجوی مرکزی بزرگ -->
+            <div class="w-full md:w-5/12">
+                <form action="/" method="GET" class="relative flex items-center">
+                    <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجو در محصولات..." class="w-full bg-gray-100 border border-transparent focus:border-red-500 focus:bg-white rounded-xl px-4 py-2.5 pr-10 text-sm focus:outline-none transition">
+                    <button type="submit" class="absolute right-3 text-gray-400 hover:text-red-600 transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
             </div>
 
+            <!-- دکمه‌های حساب کاربری، سبد خرید و مقایسه -->
+            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <a href="/compare" class="relative bg-gray-100 hover:bg-gray-200 text-gray-700 p-2.5 rounded-xl transition flex items-center gap-1 text-xs" title="مقایسه محصولات">
+                    <i class="fas fa-balance-scale text-sm"></i>
+                    <span class="hidden sm:inline">مقایسه</span>
+                </a>
+                <a href="/cart" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-xl transition flex items-center gap-2 text-xs font-bold">
+                    <i class="fas fa-shopping-cart text-sm"></i>
+                    <span>سبد خرید</span>
+                </a>
+                {% if session.get('user_id') %}
+                    <a href="/profile" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2.5 rounded-xl text-xs font-medium transition">حساب کاربری</a>
+                    <a href="/user-logout" class="text-gray-400 hover:text-red-600 text-xs transition" title="خروج"><i class="fas fa-sign-out-alt"></i></a>
+                {% else %}
+                    <a href="/user-login" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-xs font-medium transition flex items-center gap-1">
+                        <i class="fas fa-user"></i> ورود / ثبت‌نام
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- نوار دسته‌بندی‌ها (مگامنو افقی) -->
+        <div class="border-t border-gray-100 bg-white hidden md:block">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-8 text-xs font-medium text-gray-600 h-11">
+                <a href="/" class="text-red-600 font-bold flex items-center gap-1 hover:text-red-700"><i class="fas fa-bars"></i> دسته‌بندی کالاها</a>
+                <a href="/?q=گوشی" class="hover:text-red-600 transition">کالای دیجیتال</a>
+                <a href="/?q=لوازم" class="hover:text-red-600 transition">لوازم خانگی</a>
+                <a href="/?q=پوشاک" class="hover:text-red-600 transition">مد و پوشاک</a>
+                <a href="/blog" class="hover:text-red-600 transition">وبلاگ و مقالات</a>
+            </div>
         </div>
     </header>
 
     <!-- محتوای اصلی -->
-    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
         
-        <!-- بخش جستجو و فیلتر -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
-            <form action="/" method="GET" class="w-full md:w-1/2 flex gap-2">
-                <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجوی محصول..." class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-red-500">
-                <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm transition hover:bg-red-700 shrink-0">جستجو</button>
-            </form>
-            
-            <div class="flex gap-2 text-xs">
-                <a href="/?sort=newest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">جدیدترین</a>
-                <a href="/?sort=cheapest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">ارزان‌ترین</a>
-                <a href="/?sort=expensive" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">گران‌ترین</a>
+        <!-- بنرهای بالایی (اسلایدر و بنر کناری مشابه دیجی‌کالا) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+            <!-- بنر بزرگ اسلایدر گالری -->
+            <div class="lg:col-span-2 bg-gradient-to-r from-red-600 to-rose-500 rounded-2xl p-8 text-white flex flex-col justify-between shadow-md relative overflow-hidden">
+                <div class="z-10 max-w-lg">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold mb-3 inline-block">پیشنهاد ویژه شگفت‌انگیز</span>
+                    <h1 class="text-2xl md:text-3xl font-black mb-3">جشنواره تخفیف‌های بزرگ لوازم دیجیتال</h1>
+                    <p class="text-xs md:text-sm text-white/90 mb-6 leading-relaxed">بهترین محصولات و گجت‌های هوشمند با تخفیف‌های استثنایی و ارسال سریع. همین حالا خرید کنید!</p>
+                    <a href="#products-section" class="bg-white text-red-600 hover:bg-gray-100 font-bold px-6 py-2.5 rounded-xl text-xs transition inline-block">مشاهده محصولات</a>
+                </div>
+                <!-- گرافیک پس‌زمینه دکوراتیو -->
+                <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+            </div>
+
+            <!-- بنرهای کناری تبلیغاتی -->
+            <div class="flex flex-col gap-4">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-red-600 font-bold">تخفیف‌های هفتگی</span>
+                        <h3 class="font-bold text-sm text-gray-800 mt-1">برترین ساعت‌های هوشمند</h3>
+                    </div>
+                    <i class="fas fa-clock text-3xl text-red-100"></i>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-blue-600 font-bold">ارسال رایگان</span>
+                        <h3 class="font-bold text-sm text-gray-800 mt-1">خرید بالای ۵ میلیون تومان</h3>
+                    </div>
+                    <i class="fas fa-shipping-fast text-3xl text-blue-100"></i>
+                </div>
             </div>
         </div>
 
-        <!-- لیست محصولات -->
-        <h2 class="text-lg font-bold mb-4 text-gray-800">محصولات فروشگاه</h2>
+        <!-- فیلتر مرتب‌سازی سریع -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 flex justify-between items-center flex-wrap gap-4">
+            <span class="font-bold text-sm text-gray-800" id="products-section">لیست محصولات فروشگاه</span>
+            <div class="flex gap-2 text-xs">
+                <span class="text-gray-400 self-center ml-1">مرتب‌سازی:</span>
+                <a href="/?sort=newest" class="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition">جدیدترین</a>
+                <a href="/?sort=cheapest" class="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition">ارزان‌ترین</a>
+                <a href="/?sort=expensive" class="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition">گران‌ترین</a>
+            </div>
+        </div>
+
+        <!-- لیست محصولات (کارت‌های مدرن) -->
         {% if products %}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {% for product in products %}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-lg transition duration-300">
                     <div>
-                        <a href="/product/{{ product.id }}">
-                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-48 object-cover">
-                        </a>
+                        <div class="relative overflow-hidden group">
+                            <a href="/product/{{ product.id }}">
+                                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-52 object-cover group-hover:scale-105 transition duration-500">
+                            </a>
+                            <span class="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow">ویژه</span>
+                        </div>
                         <div class="p-4">
-                            <a href="/product/{{ product.id }}" class="font-bold text-sm text-gray-800 hover:text-red-600 line-clamp-2 mb-2 block h-10">
+                            <a href="/product/{{ product.id }}" class="font-bold text-xs text-gray-800 hover:text-red-600 line-clamp-2 mb-3 block h-8 leading-relaxed">
                                 {{ product.title }}
                             </a>
-                            <div class="text-red-600 font-bold text-sm">
-                                {{ "{:,}".format(product.discount_price) }} تومان
+                            <div class="text-red-600 font-black text-sm">
+                                {{ "{:,}".format(product.discount_price) }} <span class="text-[10px] font-normal text-gray-500">تومان</span>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 pt-0 flex justify-between items-center border-t border-gray-50 mt-2">
+                    <div class="p-4 pt-0 flex justify-between items-center border-t border-gray-50 mt-2 pt-3">
                         <button type="button" 
                                 onclick="toggleCompare({{ product.id }}, '{{ product.title }}')" 
-                                class="compare-btn text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
+                                class="compare-btn text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl transition flex items-center gap-1 font-medium">
                             <i class="fas fa-balance-scale"></i> مقایسه
                         </button>
-                        <a href="/product/{{ product.id }}" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition">
-                            جزئیات
+                        <a href="/product/{{ product.id }}" class="text-xs bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3.5 py-1.5 rounded-xl font-bold transition">
+                            جزئیات کالا
                         </a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="bg-white rounded-2xl p-12 text-center text-gray-400">
-                محصولی یافت نشد.
+            <div class="bg-white rounded-2xl p-12 text-center text-gray-400 shadow-sm">
+                <i class="fas fa-box-open text-4xl mb-3 block text-gray-300"></i>
+                محصولی با این مشخصات یافت نشد.
             </div>
         {% endif %}
 
-        <!-- بخش مقالات اخیر -->
+        <!-- بخش مقالات آموزشی (بلاگ) -->
         {% if posts %}
-        <div class="mt-12">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800">آخرین مقالات آموزشی</h2>
-                <a href="/blog" class="text-xs text-red-600 hover:underline">مشاهده همه مقالات</a>
+        <div class="mt-16">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-black text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-newspaper text-red-600"></i> آخرین مقالات آموزشی و راهنمای خرید
+                </h2>
+                <a href="/blog" class="text-xs text-red-600 font-bold hover:underline">مشاهده همه مقالات</a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {% for post in posts %}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
                     <div>
-                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-36 object-cover">
+                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-40 object-cover">
                         <div class="p-4">
                             <h3 class="font-bold text-sm mb-2 text-gray-800 line-clamp-1">{{ post.title }}</h3>
-                            <p class="text-xs text-gray-500 line-clamp-2 mb-4">{{ post.content }}</p>
+                            <p class="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{{ post.content }}</p>
                         </div>
                     </div>
                     <div class="p-4 pt-0">
-                        <a href="/blog/{{ post.id }}" class="text-xs text-red-600 font-medium hover:underline">ادامه مطلب...</a>
+                        <a href="/blog/{{ post.id }}" class="text-xs text-red-600 font-bold hover:underline flex items-center gap-1">
+                            مطالعه ادامه مقاله <i class="fas fa-arrow-left text-[10px]"></i>
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
@@ -131,22 +203,43 @@
 
     </main>
 
-    <!-- فوتر -->
-    <footer class="bg-white border-t border-gray-200 mt-12 py-6 text-center text-xs text-gray-500">
-        تمامی حقوق محفوظ است &copy; 2026
+    <!-- فوتر حرفه‌ای فروشگاه -->
+    <footer class="bg-white border-t border-gray-200 mt-20 py-10 text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-right">
+            <div>
+                <h4 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2"><i class="fas fa-store text-red-600"></i> درباره فروشگاه ما</h4>
+                <p class="leading-relaxed text-gray-500">این وب‌سایت به عنوان مرجع مقایسه و معرفی بهترین محصولات بازار فعالیت می‌کند تا تجربه‌ای امن و هوشمندانه در خرید آنلاین داشته باشید.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 text-sm mb-3">دسترسی سریع</h4>
+                <div class="flex flex-col gap-2">
+                    <a href="/" class="hover:text-red-600 transition">صفحه اصلی</a>
+                    <a href="/blog" class="hover:text-red-600 transition">مجله مقالات</a>
+                    <a href="/compare" class="hover:text-red-600 transition">ابزار مقایسه کالا</a>
+                    <a href="/cart" class="hover:text-red-600 transition">سبد خرید</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 text-sm mb-3">راهنمای خرید</h4>
+                <p class="leading-relaxed text-gray-500">می‌توانید محصولات موردنظر خود را مقایسه کرده و سپس با اطمینان خرید خود را نهایی کنید.</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-100 pt-6 text-center">
+            تمامی حقوق مادی و معنوی برای این وب‌سایت محفوظ است &copy; 2026
+        </div>
     </footer>
 
     <!-- نوار شناور مقایسه محصولات -->
-    <div id="compare-bar" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t border-gray-200 p-4 transform translate-y-full transition-transform duration-300 z-50 flex flex-col sm:flex-row justify-between items-center max-w-3xl mx-auto rounded-t-2xl" style="display: none;">
+    <div id="compare-bar" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white shadow-2xl border-t border-gray-800 p-4 transform translate-y-full transition-transform duration-300 z-50 flex flex-col sm:flex-row justify-between items-center max-w-3xl mx-auto rounded-t-2xl" style="display: none;">
         <div class="flex flex-col sm:flex-row items-center gap-3 mb-3 sm:mb-0">
-            <span class="font-bold text-xs text-gray-800">محصولات انتخاب شده برای مقایسه:</span>
-            <div id="selected-compare-list" class="flex flex-wrap gap-2 text-xs text-gray-600"></div>
+            <span class="font-bold text-xs text-red-400">محصولات انتخاب شده برای مقایسه:</span>
+            <div id="selected-compare-list" class="flex flex-wrap gap-2 text-xs text-gray-300"></div>
         </div>
         <div class="flex gap-2">
-            <button onclick="goToCompare()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-xl font-medium transition">
+            <button onclick="goToCompare()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition">
                 شروع مقایسه
             </button>
-            <button onclick="clearCompare()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs px-3 py-2 rounded-xl transition">
+            <button onclick="clearCompare()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-3 py-2.5 rounded-xl transition">
                 حذف همه
             </button>
         </div>
@@ -189,7 +282,7 @@
             if (list.length > 0) {
                 bar.style.display = 'flex';
                 setTimeout(() => bar.classList.remove('translate-y-full'), 10);
-                listContainer.innerHTML = list.map(item => `<span class="bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">${item.title}</span>`).join('');
+                listContainer.innerHTML = list.map(item => `<span class="bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700">${item.title}</span>`).join('');
             } else {
                 bar.classList.add('translate-y-full');
                 setTimeout(() => {
