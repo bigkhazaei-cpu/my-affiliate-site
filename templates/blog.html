@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مجله و مقالات | دیجی‌پلاس</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans p-6">
+    <div class="max-w-5xl mx-auto space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
+            <h1 class="font-bold text-sm text-red-600">مجله راهنمای خرید و مقالات</h1>
+            <a href="/" class="bg-gray-100 px-4 py-2 rounded text-xs font-bold text-gray-700">← بازگشت به فروشگاه</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {% for post in posts %}
+            <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+                <div>
+                    <img src="{{ post.image_url }}" class="h-40 w-full object-cover rounded-xl mb-3">
+                    <h2 class="font-bold text-sm text-gray-800 mb-2">{{ post.title }}</h2>
+                </div>
+                <a href="/blog/{{ post.id }}" class="block text-center bg-red-600 text-white py-2 rounded-xl text-xs font-bold mt-4">مطالعه مقاله</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
