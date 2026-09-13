@@ -12,9 +12,9 @@ app.secret_key = "super_secret_key_change_me"
 # خواندن تنظیمات دیتابیس و کلیدهای Supabase از متغیرهای محیطی
 DATABASE_URL = os.environ.get("DATABASE_URL")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")  # هماهنگ شده با نام ثبت شده در Render
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-# مقداردهی کلاینت Supabase Storage (در صورت موجود بودن کلیدها)
+# مقداردهی کلاینت Supabase Storage
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
 BUCKET_NAME = "products-images"
 
@@ -27,7 +27,7 @@ def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
 
-# راه‌اندازی جدول‌ها در Supabase
+# راه‌اندازی جدول‌ها در دیتابیس
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -59,6 +59,7 @@ def init_db():
     cursor.close()
     conn.close()
 
+# اجرای مقداردهی اولیه دیتابیس در شروع برنامه
 init_db()
 
 @app.route("/")
@@ -158,11 +159,11 @@ def admin():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_extension = filename.rsplit('.', 1)[1].lower()
-            unique_filename = f"{int(time.time())}_{secure_filename(filename)}"
+            unique_filename = f"{int(time.time())}_{filename}"
             
             file_bytes = file.read()
             
-            # آپلود مستقیم به Supabase Storage در صورت فعال بودن کلاینت
+            # آپلود مستقیم به Supabase Storage
             if supabase:
                 try:
                     supabase.storage.from_(BUCKET_NAME).upload(
@@ -173,7 +174,7 @@ def admin():
                     image_url = supabase.storage.from_(BUCKET_NAME).get_public_url(unique_filename)
                 except Exception as e:
                     print(f"Error uploading image to Supabase: {e}")
-            
+        
         cursor.execute('''
             INSERT INTO products (title, category, price, discount_price, description, affiliate_link, image_url)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
