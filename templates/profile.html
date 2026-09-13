@@ -14,19 +14,19 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-4">حساب کاربری</h1>
             <div class="border-b border-gray-200 pb-4 mb-4">
                 <span class="text-sm text-gray-500">ایمیل شما:</span>
-                <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>
+                <p class="text-lg font-semibold text-gray-800">{{ session.get('user_email') }}</p>
             </div>
             <div>
-                <a href="{{ url_for('logout') }}" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">خروج از حساب کاربری</a>
+                <a href="{{ url_for('user_logout') }}" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">خروج از حساب کاربری</a>
             </div>
         </div>
 
-        <!-- محصولات یا علاقه‌مندی‌ها در صورت وجود -->
-        {% if favorites %}
+        <!-- محصولات علاقه‌مندی‌ها -->
+        {% if favorite_products %}
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-xl font-bold mb-4">علاقه‌مندی‌های شما</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {% for fav in favorites %}
+                    {% for fav in favorite_products %}
                         <div class="border rounded-lg p-4 flex justify-between items-center">
                             <div>
                                 <h4 class="font-bold text-gray-800 mb-1">{{ fav.title }}</h4>
@@ -36,6 +36,10 @@
                         </div>
                     {% endfor %}
                 </div>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg shadow-md p-6 text-center text-gray-500">
+                <p>شما هنوز هیچ محصولی را به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
             </div>
         {% endif %}
     </div>
