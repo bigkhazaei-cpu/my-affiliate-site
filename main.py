@@ -1,206 +1,162 @@
+# main.py
 import os
-import time
-from flask import Flask, render_template, request, redirect, url_for, session
-from werkzeug.utils import secure_filename
-import psycopg2
-from psycopg2.extras import RealDictCursor
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from supabase import create_client, Client
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = "super_secret_key_change_me"
+app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key-change-it")
 
-# خواندن تنظیمات دیتابیس و کلیدهای Supabase از متغیرهای محیطی
-DATABASE_URL = os.environ.get("DATABASE_URL")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# مقداردهی کلاینت Supabase Storage
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
-BUCKET_NAME = "products-images"
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def get_db_connection():
-    conn = psycopg2.connect(DATABASE_URL)
-    return conn
-
-# راه‌اندازی جدول‌ها در دیتابیس
-def init_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS products (
-            id SERIAL PRIMARY KEY,
-            title TEXT NOT NULL,
-            category TEXT,
-            price INTEGER,
-            discount_price INTEGER,
-            description TEXT,
-            affiliate_link TEXT,
-            image_url TEXT
-        )
-    ''')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS reviews (
-            id SERIAL PRIMARY KEY,
-            product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-            author TEXT,
-            rating INTEGER,
-            comment TEXT
-        )
-    ''')
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-# اجرای مقداردهی اولیه دیتابیس در شروع برنامه
-init_db()
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+BUCKET_NAME = "product-images"
 
 @app.route("/")
 def home():
     search_query = request.args.get("search", "").strip()
-    selected_category = request.args.get("category", "").strip()
-    
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    query = "SELECT * FROM products WHERE 1=1"
-    params = []
-    
+    category = request.args.get("category", "").strip()
+    sort_by = request.args.get("sort", "newest").strip()
+    page = int(request.args.get("page", 1))
+    per_page = 8
+    start = (page - 1) * per_page
+    end = start + per_page - 1
+
+    query = supabase.table("products").select("*", count="exact")
+
     if search_query:
-        query += " AND (title ILIKE %s OR description ILIKE %s)"
-        params.extend([f"%{search_query}%", f"%{search_query}%"])
-        
-    if selected_category:
-        query += " AND category = %s"
-        params.append(selected_category)
-        
-    cursor.execute(query, params)
-    products = cursor.fetchall()
+        query = query.ilike("title", f"%{search_query}%")
+    if category:
+        query = query.eq("category", category)
+
+    if sort_by == "newest":
+        query = query.order("id", desc=True)
+    elif sort_by == "price_asc":
+        query = query.order("price", desc=False)
+    elif sort_by == "price_desc":
+        query = query.order("price", desc=True)
+    else:
+        query = query.order("id", desc=True)
+
+    query = query.range(start, end)
+    response = query.execute()
+    products = response.data
+    total_count = response.count if hasattr(response, 'count') and response.count is not None else len(products)
     
-    cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != ''")
-    categories = [row['category'] for row in cursor.fetchall()]
-    
-    cursor.close()
-    conn.close()
-    
-    return render_template("index.html", products=products, categories=categories, search_query=search_query, selected_category=selected_category)
+    total_pages = (total_count + per_page - 1) // per_page if total_count > 0 else 1
+
+    cat_response = supabase.table("products").select("category").execute()
+    all_categories = list(set([item["category"] for item in cat_response.data if item.get("category")]))
+
+    return render_template(
+        "index.html",
+        products=products,
+        categories=all_categories,
+        search_query=search_query,
+        selected_category=category,
+        sort_by=sort_by,
+        current_page=page,
+        total_pages=total_pages
+    )
 
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
-    product = cursor.fetchone()
-    
-    if not product:
-        cursor.close()
-        conn.close()
-        return "محصول یافت نشد", 404
-        
-    cursor.execute("SELECT * FROM reviews WHERE product_id = %s", (product_id,))
-    reviews = cursor.fetchall()
-    
-    cursor.close()
-    conn.close()
-    
-    return render_template("product_detail.html", product=product, reviews=reviews)
+    prod_resp = supabase.table("products").select("*").eq("id", product_id).execute()
+    if not prod_resp.data:
+        return "محصولی یافت نشد", 404
+    product = prod_resp.data[0]
 
-@app.route("/product/<int:product_id>/review", methods=["POST"])
+    rev_resp = supabase.table("reviews").select("*").eq("product_id", product_id).order("id", desc=True).execute()
+    reviews = rev_resp.data
+
+    related_products = []
+    if product.get("category"):
+        rel_resp = supabase.table("products").select("*").eq("category", product["category"]).neq("id", product_id).limit(4).execute()
+        related_products = rel_resp.data
+
+    return render_template("product_detail.html", product=product, reviews=reviews, related_products=related_products)
+
+@app.route("/review/<int:product_id>", methods=["POST"])
 def add_review(product_id):
     author = request.form.get("author")
     rating = int(request.form.get("rating", 5))
     comment = request.form.get("comment")
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO reviews (product_id, author, rating, comment) VALUES (%s, %s, %s, %s)",
-                   (product_id, author, rating, comment))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
+
+    supabase.table("reviews").insert({
+        "product_id": product_id,
+        "author": author,
+        "rating": rating,
+        "comment": comment
+    }).execute()
+
     return redirect(url_for("product_detail", product_id=product_id))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         password = request.form.get("password")
-        if password == "admin123":
-            session["logged_in"] = True
+        if password == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
             return redirect(url_for("admin"))
+        else:
+            flash("رمز عبور اشتباه است", "error")
     return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("admin_logged_in", None)
+    return redirect(url_for("home"))
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
-    if not session.get("logged_in"):
+    if not session.get("admin_logged_in"):
         return redirect(url_for("login"))
-        
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
+
     if request.method == "POST":
         title = request.form.get("title")
         category = request.form.get("category")
-        price = int(request.form.get("price") or 0)
-        discount_price = int(request.form.get("discount_price") or 0)
+        price = float(request.form.get("price") or 0)
+        discount_price = float(request.form.get("discount_price") or 0)
         description = request.form.get("description")
         affiliate_link = request.form.get("affiliate_link")
-        
+
         image_url = ""
         file = request.files.get("image")
-        if file and allowed_file(file.filename):
+        if file and file.filename:
             filename = secure_filename(file.filename)
-            file_extension = filename.rsplit('.', 1)[1].lower()
-            unique_filename = f"{int(time.time())}_{filename}"
-            
             file_bytes = file.read()
-            
-            # آپلود مستقیم به Supabase Storage
-            if supabase:
-                try:
-                    supabase.storage.from_(BUCKET_NAME).upload(
-                        path=unique_filename,
-                        file=file_bytes,
-                        file_options={"content-type": f"image/{file_extension}"}
-                    )
-                    image_url = supabase.storage.from_(BUCKET_NAME).get_public_url(unique_filename)
-                except Exception as e:
-                    print(f"Error uploading image to Supabase: {e}")
-        
-        cursor.execute('''
-            INSERT INTO products (title, category, price, discount_price, description, affiliate_link, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ''', (title, category, price, discount_price, description, affiliate_link, image_url))
-        conn.commit()
-        cursor.close()
-        conn.close()
+            try:
+                supabase.storage.from_(BUCKET_NAME).upload(
+                    path=filename,
+                    file=file_bytes,
+                    file_options={"content-type": file.content_type}
+                )
+                image_url = supabase.storage.from_(BUCKET_NAME).get_public_url(filename)
+            except Exception as e:
+                print(f"Error uploading image: {e}")
+
+        supabase.table("products").insert({
+            "title": title,
+            "category": category,
+            "price": price,
+            "discount_price": discount_price,
+            "description": description,
+            "affiliate_link": affiliate_link,
+            "image_url": image_url
+        }).execute()
+
         return redirect(url_for("admin"))
-        
-    cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return render_template("admin.html", products=products)
+
+    prod_resp = supabase.table("products").select("*").order("id", desc=True).execute()
+    return render_template("admin.html", products=prod_resp.data)
 
 @app.route("/admin/delete/<int:product_id>", methods=["POST"])
 def delete_product(product_id):
-    if not session.get("logged_in"):
+    if not session.get("admin_logged_in"):
         return redirect(url_for("login"))
-        
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    supabase.table("products").delete().eq("id", product_id).execute()
     return redirect(url_for("admin"))
 
 if __name__ == "__main__":
