@@ -2,35 +2,42 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>حساب کاربری | دیجی‌پلاس</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل کاربری</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans p-6">
-    <div class="max-w-4xl mx-auto space-y-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
-            <div>
-                <h1 class="font-bold text-sm text-gray-800">حساب کاربری: <span class="text-red-600">{{ session.get('user_email') }}</span></h1>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <a href="{{ url_for('home') }}" class="text-blue-600 hover:underline mb-4 inline-block">&larr; بازگشت به صفحه اصلی</a>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">حساب کاربری</h1>
+            <div class="border-b border-gray-200 pb-4 mb-4">
+                <span class="text-sm text-gray-500">ایمیل شما:</span>
+                <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>
             </div>
-            <a href="/" class="bg-gray-100 px-4 py-2 rounded text-xs font-bold text-gray-700">← بازگشت به فروشگاه</a>
+            <div>
+                <a href="{{ url_for('logout') }}" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition">خروج از حساب کاربری</a>
+            </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm">
-            <h3 class="font-bold text-sm text-gray-800 mb-4">❤️ محصولات مورد علاقه شما</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {% for p in favorite_products %}
-                <div class="border rounded-xl p-3 flex items-center gap-4">
-                    <img src="{{ p.image_url }}" class="w-16 h-16 object-contain">
-                    <div>
-                        <h4 class="font-bold text-xs text-gray-800 line-clamp-1">{{ p.title }}</h4>
-                        <span class="text-red-600 font-bold text-xs">{{\ "{:,}\".format(p.discount_price) }} تومان</span>
-                        <a href="/product/{{ p.id }}" class="block text-blue-600 text-[10px] mt-1">مشاهده محصول →</a>
-                    </div>
+        <!-- محصولات یا علاقه‌مندی‌ها در صورت وجود -->
+        {% if favorites %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">علاقه‌مندی‌های شما</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for fav in favorites %}
+                        <div class="border rounded-lg p-4 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-1">{{ fav.title }}</h4>
+                                <span class="text-green-600 font-bold text-sm">{{ fav.discount_price }} تومان</span>
+                            </div>
+                            <a href="{{ url_for('product_detail', product_id=fav.id) }}" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 transition">مشاهده</a>
+                        </div>
+                    {% endfor %}
                 </div>
-                {% else %}
-                <p class="text-xs text-gray-400">هنوز محصولی را به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
-                {% endfor %}
             </div>
-        </div>
+        {% endif %}
     </div>
 </body>
 </html>
