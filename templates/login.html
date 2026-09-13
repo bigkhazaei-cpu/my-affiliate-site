@@ -2,29 +2,17 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود ادمین - دیجی‌پلاس</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>ورود مدیر | دیجی‌پلاس</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-
-    <div class="admin-card" style="width: 100%; max-width: 400px; text-align: center;">
-        <h2 style="margin-bottom: 20px; font-size: 20px; color: #ef4056;">ورود به پنل مدیریت</h2>
-        
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div style="background: #fdf2f2; color: #ef4056; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
-                    {{ messages[0] }}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <input type="password" name="password" placeholder="رمز عبور ادمین" required class="form-control" style="text-align: center;">
-            <button type="submit" class="btn-admin" style="background: #ef4056; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; cursor: pointer;">ورود</button>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-sm border w-96 text-center">
+        <h2 class="text-base font-bold text-red-600 mb-4">ورود به پنل مدیریت</h2>
+        <form method="POST" class="space-y-4">
+            <input type="password" name="password" placeholder="رمز عبور ادمین..." required class="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none">
+            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700">ورود</button>
         </form>
-        <p style="margin-top: 15px;"><a href="/" style="color: #62666d; text-decoration: none; font-size: 13px;">بازگشت به صفحه اصلی</a></p>
+        <a href="/" class="block mt-4 text-xs text-gray-400">← بازگشت به صفحه اصلی</a>
     </div>
-
 </body>
 </html>
