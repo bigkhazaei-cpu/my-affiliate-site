@@ -90,6 +90,11 @@ def add_comment(product_id):
             print("Error adding comment:", e)
     return redirect(url_for("product_detail", product_id=product_id))
 
+# --- صفحه مقایسه محصولات (برطرف‌کننده ارور BuildError) ---
+@app.route("/compare")
+def compare_products():
+    return render_template("compare.html")
+
 # --- بخش سبد خرید (Cart) ---
 @app.route("/cart")
 def view_cart():
