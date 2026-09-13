@@ -1,1 +1,2 @@
-web: gunicorn app:app
+# Procfile (برای استقرار در پلتفرم Render)
+web: gunicorn main:app
