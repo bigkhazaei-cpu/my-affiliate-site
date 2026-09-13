@@ -1,10 +1,10 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فروشگاه و بررسی محصولات</title>
-    <!-- فراخوانی صحیح فایل استایل با url_for -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -15,7 +15,7 @@
     </header>
 
     <div class="container">
-        <!-- بخش جستجو و فیلتر دسته‌بندی -->
+        <!-- بخش جستجو، فیلتر و مرتب‌سازی -->
         <div class="search-filter-container">
             <form method="GET" action="{{ url_for('home') }}">
                 <input type="text" name="search" placeholder="جستجوی محصول..." value="{{ search_query }}">
@@ -25,7 +25,12 @@
                         <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="btn">جستجو</button>
+                <select name="sort">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>جدیدترین</option>
+                    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>ارزان‌ترین</option>
+                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>گران‌ترین</option>
+                </select>
+                <button type="submit" class="btn">اعمال فیلتر</button>
             </form>
             <a href="{{ url_for('admin') }}" class="btn btn-success">پنل ادمین</a>
         </div>
@@ -38,7 +43,7 @@
                         {% if product.image_url %}
                             <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image">
                         {% else %}
-                            <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#ecf0f1;">بدون تصویر</div>
+                            <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
                         {% endif %}
                         <div class="product-info">
                             <span class="product-category">{{ product.category or 'عمومی' }}</span>
@@ -59,9 +64,21 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p style="text-align: center; grid-column: 1 / -1; color: #7f8c8d; padding: 40px;">محصولی یافت نشد.</p>
+                <p style="text-align: center; grid-column: 1 / -1; color: #64748b; padding: 40px;">محصولی یافت نشد.</p>
             {% endif %}
         </div>
+
+        <!-- صفحه‌بندی (Pagination) -->
+        {% if total_pages > 1 %}
+            <div style="display: flex; justify-content: center; gap: 8px; margin-top: 40px;">
+                {% for p in range(1, total_pages + 1) %}
+                    <a href="{{ url_for('home', page=p, search=search_query, category=selected_category, sort=sort_by) }}" 
+                       class="btn {% if p != current_page %}" style="background-color: #cbd5e1; color: #1e293b;{% else %}"{% endif %}">
+                        {{ p }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 
 </body>
