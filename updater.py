@@ -1,7 +1,8 @@
 import os
 import requests
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
+# قرار دادن مستقیم آدرس Supabase برای جلوگیری از خطای خوانش متغیر در گیت‌هاب
+SUPABASE_URL = "https://wvxofntigjdexaiopgow.supabase.co"
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 headers = {
@@ -12,7 +13,6 @@ headers = {
 }
 
 def update_product_price(product_id, new_price):
-    # فرض بر این است که نام ستون قیمت در دیتابیس شما discount_price یا price است
     url = f"{SUPABASE_URL}/rest/v1/products?id=eq.{product_id}"
     
     payload = {
@@ -27,5 +27,4 @@ def update_product_price(product_id, new_price):
         print(f"خطا در به‌روزرسانی محصول {product_id}: {response.text}")
 
 if __name__ == "__main__":
-    # تست روی محصول با شناسه 1
     update_product_price(1, 21500000)
