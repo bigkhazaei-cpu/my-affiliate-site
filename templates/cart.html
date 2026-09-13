@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>سبد خرید | فروشگاه</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans pb-12">
+    <div class="max-w-4xl mx-auto p-6 mt-10">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">سبد خرید شما</h1>
+            <a href="{{ url_for('home') }}" class="text-red-600 hover:underline text-sm font-medium"><i class="fa-solid fa-arrow-right ml-1"></i>بازگشت به فروشگاه</a>
+        </div>
+
+        {% if cart_items %}
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <div class="space-y-4">
+                    {% for item in cart_items %}
+                        <div class="flex items-center justify-between p-4 border rounded-xl">
+                            <div class="flex items-center gap-4">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.title }}" class="w-20 h-20 object-cover rounded-xl">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-sm line-clamp-1">{{ item.product.title }}</h3>
+                                    <p class="text-gray-500 text-xs mt-1">تعداد: {{ item.quantity }}</p>
+                                    <p class="text-red-600 font-bold text-sm mt-2">{{ "{:,}".format(item.subtotal) }} تومان</p>
+                                </div>
+                            </div>
+                            <form action="{{ url_for('remove_from_cart', cart_id=item.cart_id) }}" method="POST">
+                                <button type="submit" class="text-gray-400 hover:text-red-600 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-6 pt-6 border-t flex justify-between items-center">
+                    <div>
+                        <span class="text-gray-500 text-sm">مجموع قابل پرداخت:</span>
+                        <h2 class="text-xl font-bold text-red-600 mt-1">{{ "{:,}".format(total_price) }} تومان</h2>
+                    </div>
+                    <button onclick="alert('درگاه پرداخت به زودی متصل خواهد شد.')" class="px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition shadow-lg shadow-red-200">تایید و تکمیل سفارش</button>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+                <i class="fa-solid fa-cart-shopping text-gray-300 text-5xl mb-4"></i>
+                <p class="text-gray-500 text-base">سبد خرید شما خالی است.</p>
+                <a href="{{ url_for('home') }}" class="inline-block mt-4 px-6 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700">مشاهده محصولات</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

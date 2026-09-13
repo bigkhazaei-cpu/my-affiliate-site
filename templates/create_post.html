@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>افزودن مقاله جدید | بلاگ</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans pb-12">
+    <div class="max-w-2xl mx-auto p-6 mt-10">
+        <div class="bg-white rounded-2xl shadow-sm p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-xl font-bold text-gray-800">نوشتن مقاله جدید</h1>
+                <a href="{{ url_for('blog_list') }}" class="text-gray-500 hover:text-red-600 text-sm"><i class="fa-solid fa-arrow-right ml-1"></i>بازگشت</a>
+            </div>
+
+            {% if error %}
+                <div class="bg-red-50 text-red-600 p-3 rounded-xl text-sm mb-4">{{ error }}</div>
+            {% endif %}
+
+            <form action="{{ url_for('create_post') }}" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">عنوان مقاله</label>
+                    <input type="text" name="title" required placeholder="عنوان جذاب برای مقاله..." 
+                           class="w-full px-4 py-2 border rounded-xl text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">لینک تصویر (URL)</label>
+                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg" 
+                           class="w-full px-4 py-2 border rounded-xl text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">متن مقاله</label>
+                    <textarea name="content" rows="6" required placeholder="متن کامل مقاله..." 
+                              class="w-full px-4 py-2 border rounded-xl text-sm focus:outline-none focus:border-red-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition shadow-lg shadow-red-200">انتشار مقاله</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
