@@ -90,10 +90,22 @@ def add_comment(product_id):
             print("Error adding comment:", e)
     return redirect(url_for("product_detail", product_id=product_id))
 
-# --- صفحه مقایسه محصولات (برطرف‌کننده ارور BuildError) ---
+# --- صفحه مقایسه محصولات (پشتیبانی از دریافت محصولات با آی‌دی) ---
 @app.route("/compare")
 def compare_products():
-    return render_template("compare.html")
+    ids_param = request.args.get("ids", "")
+    products = []
+    
+    if ids_param:
+        try:
+            product_ids = [int(i) for i in ids_param.split(",") if i.isdigit()]
+            if product_ids:
+                res = supabase.table("products").select("*").in_("id", product_ids).execute()
+                products = res.data if res.data else []
+        except Exception as e:
+            print("Error fetching compare products:", e)
+            
+    return render_template("compare.html", products=products)
 
 # --- بخش سبد خرید (Cart) ---
 @app.route("/cart")
@@ -187,7 +199,7 @@ def create_post():
                 return redirect(url_for("blog_list"))
             except Exception as e:
                 print("Error creating post:", e)
-                return render_template("create_post.html", error="خطا در ثبت مقاله. لطفاً مجدد تلاش کنید.")
+                return render_template("create_post.html", error="خطا در ثبت مقاله.")
                 
     return render_template("create_post.html")
 
@@ -247,7 +259,7 @@ def user_register():
         except Exception as e:
             print("Register error:", e)
             
-        return render_template("register.html", error="خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.")
+        return render_template("register.html", error="خطا در ثبت‌نام.")
     return render_template("register.html")
 
 @app.route("/user-logout")
@@ -259,7 +271,7 @@ def user_logout():
 def logout():
     return redirect(url_for("user_logout"))
 
-@app.route("/toggle-favorite/<int:product_id>", methods=["POST"])
+@app.route("/toggle-favorite/<int:product_id>", methods/=["POST"])
 def toggle_favorite(product_id):
     if "user_id" not in session:
         return jsonify({"status": "unauthorized"})
@@ -303,6 +315,10 @@ def user_profile():
         print("Profile favorites error:", e)
         
     return render_template("profile.html", favorite_products=favorite_products)
+
+@app.route("/profile/update", methods=["POST"])
+def update_parse_profile():
+    pass
 
 @app.route("/profile/update", methods=["POST"])
 def update_profile():
