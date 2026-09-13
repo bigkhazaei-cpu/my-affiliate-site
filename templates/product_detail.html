@@ -1,42 +1,51 @@
-<!-- templates/product_detail.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.title }} - بررسی و خرید</title>
+    <title>{{ product.title }} - دیجی‌پلاس</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <header>
-        <h1>{{ product.title }}</h1>
-        <p><a href="{{ url_for('home') }}" style="color: #38bdf8; text-decoration: underline;">بازگشت به صفحه اصلی</a></p>
+    <div class="digi-topbar">
+        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 🔥
+    </div>
+
+    <header class="digi-header">
+        <div class="header-right">
+            <a href="/" class="site-logo">دیجی‌پلاس</a>
+        </div>
+        <div class="header-left">
+            <a href="/" class="btn-admin">بازگشت به صفحه اصلی</a>
+        </div>
     </header>
 
     <div class="container">
         <div class="product-detail-container">
-            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <div>
                 {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.title }}" style="max-width: 400px; width: 100%; height: auto; border-radius: 8px; object-fit: cover;">
+                    <img src="{{ product.image_url }}" alt="{{ product.title }}" class="detail-img">
+                {% else %}
+                    <div class="detail-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9; height:300px;">بدون تصویر</div>
                 {% endif %}
-                <div style="flex: 1;">
-                    <span class="product-category">{{ product.category or 'عمومی' }}</span>
-                    <h2 style="margin: 10px 0; color: #1e293b;">{{ product.title }}</h2>
-                    
-                    <div class="price-box" style="margin: 15px 0;">
-                        {% if product.discount_price and product.discount_price > 0 %}
-                            <span class="original-price" style="font-size: 16px;">{{ product.price }} تومان</span>
-                            <span class="discount-price" style="font-size: 22px; margin-right: 10px;">{{ product.discount_price }} تومان</span>
-                        {% else %}
-                            <span class="discount-price" style="font-size: 22px;">{{ product.price if product.price > 0 else 'توافقی' }}</span>
-                        {% endif %}
-                    </div>
+            </div>
+            
+            <div class="detail-info">
+                <span style="color: #898f96; font-size: 13px;">دسته‌بندی: {{ product.category or 'عمومی' }}</span>
+                <h1>{{ product.title }}</h1>
+                <p style="color: #62666d; margin: 15px 0; line-height: 1.8;">{{ product.description }}</p>
 
-                    <p style="margin: 20px 0; color: #475569; line-height: 1.8;">{{ product.description }}</p>
+                <div class="detail-price-box">
+                    {% if product.discount_price and product.discount_price > 0 %}
+                        <div class="old-price" style="font-size: 14px;">{{ product.price }} تومان</div>
+                        <div class="new-price" style="font-size: 24px; margin-top: 5px;">{{ product.discount_price }} تومان</div>
+                    {% else %}
+                        <div class="new-price" style="font-size: 24px;">{{ product.price if product.price > 0 else 'توافقی' }} {% if product.price > 0 %}تومان{% endif %}</div>
+                    {% endif %}
 
                     {% if product.affiliate_link %}
-                        <a href="{{ product.affiliate_link }}" target="_blank" class="btn btn-success" style="font-size: 16px; padding: 12px 25px; display: inline-block;">خرید و مشاهده در فروشگاه مقصد</a>
+                        <a href="{{ product.affiliate_link }}" target="_blank" class="btn-buy-lg">خرید و مشاهده در فروشگاه مقصد</a>
                     {% endif %}
                 </div>
             </div>
@@ -45,66 +54,59 @@
         <!-- محصولات مرتبط -->
         {% if related_products %}
             <div style="margin-bottom: 40px;">
-                <h3 style="margin-bottom: 20px; color: #1e293b;">محصولات مرتبط</h3>
+                <h3 style="margin-bottom: 20px; font-size: 18px;">محصولات مرتبط</h3>
                 <div class="products-grid">
                     {% for rel in related_products %}
                         <div class="product-card">
                             {% if rel.image_url %}
-                                <img src="{{ rel.image_url }}" alt="{{ rel.title }}" class="product-image">
+                                <img src="{{ rel.image_url }}" alt="{{ rel.title }}" class="product-img">
                             {% else %}
-                                <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
+                                <div class="product-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
                             {% endif %}
-                            <div class="product-info">
-                                <span class="product-category">{{ rel.category or 'عمومی' }}</span>
-                                <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="product-title">{{ rel.title }}</a>
-                                <div class="product-footer">
-                                    <div class="price-box">
-                                        <span class="discount-price">{{ rel.discount_price if rel.discount_price and rel.discount_price > 0 else rel.price }} تومان</span>
-                                    </div>
-                                    <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="btn">مشاهده</a>
-                                </div>
+                            <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="product-title">{{ rel.title }}</a>
+                            <div class="price-box">
+                                <div class="new-price">{{ rel.discount_price if rel.discount_price and rel.discount_price > 0 else rel.price }} تومان</div>
                             </div>
+                            <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="btn-card">مشاهده</a>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         {% endif %}
 
-        <!-- نظرات و امتیازات -->
-        <div class="reviews-section">
-            <h3 style="margin-bottom: 15px; color: #1e293b;">نظرات و امتیازات کاربران</h3>
+        <!-- بخش نظرات -->
+        <div class="admin-card">
+            <h3 style="margin-bottom: 20px; font-size: 18px;">نظرات کاربران</h3>
             
-            <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}" style="margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <h4 style="margin-bottom: 10px; font-size: 15px;">نظر خود را درباره این محصول ثبت کنید</h4>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
-                    <input type="text" name="author" placeholder="نام شما" required style="flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
-                    <select name="rating" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px;">
-                        <option value="5">⭐⭐⭐⭐⭐ (۵ - عالی)</option>
-                        <option value="4">⭐⭐⭐⭐ (۴ - خوب)</option>
-                        <option value="3">⭐⭐⭐ (۳ - متوسط)</option>
-                        <option value="2">⭐⭐ (۲ - ضعیف)</option>
-                        <option value="1">⭐ (۱ - خیلی بد)</option>
+            <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}" style="margin-bottom: 30px; background: #f8f8f9; padding: 20px; border-radius: 8px;">
+                <h4 style="margin-bottom: 15px; font-size: 14px;">ثبت نظر جدید</h4>
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <input type="text" name="author" placeholder="نام شما" required class="form-control" style="margin-bottom: 0;">
+                    <select name="rating" class="form-control" style="width: 150px; margin-bottom: 0;">
+                        <option value="5">⭐⭐⭐⭐⭐ (عالی)</option>
+                        <option value="4">⭐⭐⭐⭐ (خوب)</option>
+                        <option value="3">⭐⭐⭐ (متوسط)</option>
+                        <option value="2">⭐⭐ (ضعیف)</option>
+                        <option value="1">⭐ (خیلی بد)</option>
                     </select>
                 </div>
-                <textarea name="comment" rows="3" placeholder="متن نظر..." required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; margin-bottom: 15px;"></textarea>
-                <button type="submit" class="btn">ارسال نظر</button>
+                <textarea name="comment" rows="3" placeholder="متن نظر..." required class="form-control"></textarea>
+                <button type="submit" class="btn-admin" style="background: #ef4056; color: white; border: none; cursor: pointer; padding: 10px 20px;">ارسال نظر</button>
             </form>
 
-            <div class="reviews-list">
+            <div>
                 {% if reviews %}
                     {% for r in reviews %}
-                        <div class="review-item">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span class="review-author">{{ r.author }}</span>
-                                <span style="color: #f59e0b;">
-                                    {% for i in range(r.rating) %}⭐{% endfor %}
-                                </span>
+                        <div style="border-bottom: 1px solid #e0e0e0; padding: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="font-size: 14px;">{{ r.author }}</strong>
+                                <span style="color: #f59e0b;">{% for i in range(r.rating) %}⭐{% endfor %}</span>
                             </div>
-                            <p class="review-comment">{{ r.comment }}</p>
+                            <p style="color: #62666d; font-size: 14px;">{{ r.comment }}</p>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p style="color: #64748b; text-align: center;">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+                    <p style="color: #898f96; text-align: center;">هنوز نظری ثبت نشده است.</p>
                 {% endif %}
             </div>
         </div>
