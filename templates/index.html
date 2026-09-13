@@ -3,182 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دیجی‌پلاس | مرجع تخصصی تخفیف‌ها و راهنمای خرید</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>فروشگاه من | مرجع بررسی و خرید تخصصی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f1f5f9 !important;
+            background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 50%) !important;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="text-gray-800 antialiased">
 
-    <div class="bg-red-600 text-white text-center py-2 text-xs font-bold">
-        🔥 حراج بزرگ محصولات ویژه با بالاترین درصد تخفیف افیلیت 📦
-    </div>
-
-    <!-- هدر سایت -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-6">
-                <a href="/" class="text-xl font-black text-red-600">دیجی‌پلاس</a>
-                <nav class="hidden md:flex gap-4 text-sm font-semibold text-gray-600">
-                    <a href="/?category=همه" class="hover:text-red-600">همه محصولات</a>
-                    <a href="/?category=دیجیتال" class="hover:text-red-600">دیجیتال</a>
-                    <a href="/?category=پوشاک" class="hover:text-red-600">پوشاک</a>
-                    <a href="/blog" class="hover:text-red-600">مجله و مقالات</a>
-                </nav>
-            </div>
-            <div class="flex items-center gap-3">
-                <form action="/" method="GET" class="hidden sm:flex">
-                    <input type="text" name="q" placeholder="جستجو در محصولات..." class="border rounded-r px-3 py-1 text-xs focus:outline-none w-40">
-                    <button type="submit" class="bg-gray-100 border border-r-0 px-3 py-1 text-xs rounded-l">🔍</button>
-                </form>
-                {% if session.get('user_id') %}
-                    <a href="/profile" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded text-xs font-bold">حساب کاربری</a>
-                    <a href="/user-logout" class="text-gray-400 text-xs font-bold">خروج</a>
-                {% else %}
-                    <a href="/user-login" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-bold">ورود / ثبت‌نام</a>
-                {% endif %}
+    <!-- هدر -->
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-blue-600 tracking-tight">فروشگاه من</a>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-500 hidden sm:inline-block">گلچین بهترین‌های بازار</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
         
-        <!-- ابزار مقایسه شناور -->
-        <div id="compare-bar" class="hidden fixed bottom-5 right-5 bg-white border-2 border-red-600 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-4">
-            <span class="text-xs font-bold text-gray-700">مورد مقایسه: <span id="compare-count">0</span></span>
-            <button onclick="goToCompare()" class="bg-red-600 text-white px-4 py-2 rounded text-xs font-bold">شروع مقایسه</button>
-            <button onclick="clearCompare()" class="text-gray-400 text-xs font-bold">حذف همه</button>
+        <!-- بنر خوش‌آمدگویی (معرفی هدف سایت) -->
+        <div class="bg-gradient-to-l from-blue-600 to-indigo-600 rounded-3xl shadow-xl shadow-blue-500/10 p-8 sm:p-12 mb-10 text-white text-right relative overflow-hidden">
+            <div class="relative z-10 max-w-2xl">
+                <span class="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-semibold mb-4">خرید هوشمند و مطمئن</span>
+                <h1 class="text-2xl sm:text-4xl font-extrabold mb-4 leading-tight">بهترین کالاهای بازار را با بررسی تخصصی انتخاب کنید</h1>
+                <p class="text-blue-100 text-sm sm:text-base leading-relaxed mb-0">ما محصولات برتر را از معتبرترین فروشگاه‌ها گلچین کرده‌ایم تا بدون سردرگمی، بهترین خرید را داشته باشید.</p>
+            </div>
+            <!-- دکوراسیون پس‌زمینه بنر -->
+            <div class="absolute -left-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <!-- سایدبار فیلتر پیشرفته (قیمت و مرتب‌سازی) -->
-            <div class="bg-white p-4 rounded-xl shadow-sm h-fit space-y-4">
-                <h3 class="font-bold text-sm text-gray-800 border-b pb-2">فیلتر پیشرفته قیمت</h3>
-                <form action="/" method="GET" class="space-y-3 text-xs">
-                    <input type="hidden" name="category" value="{{ current_category }}">
-                    <div>
-                        <label class="block text-gray-500 mb-1">حداقل قیمت (تومان)</label>
-                        <input type="number" name="min_price" value="{{ request.args.get('min_price', '') }}" class="w-full border rounded p-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 mb-1">حداکثر قیمت (تومان)</label>
-                        <input type="number" name="max_price" value="{{ request.args.get('max_price', '') }}" class="w-full border rounded p-2">
-                    </div>
-                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded font-bold">اعمال فیلتر</button>
-                </form>
+        <!-- بخش عنوان محصولات و فیلترها -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-900">جدیدترین محصولات پیشنهادی</h2>
+            <span class="text-xs text-gray-500 font-medium">به‌روز شده امروز</span>
+        </div>
 
-                <h3 class="font-bold text-sm text-gray-800 border-b pb-2 pt-2">مرتب‌سازی</h3>
-                <form action="/" method="GET" class="space-y-2 text-xs">
-                    <input type="hidden" name="category" value="{{ current_category }}">
-                    <label class="block"><input type="radio" name="sort" value="newest" onchange="this.form.submit()" {% if request.args.get('sort') != 'cheapest' and request.args.get('sort') != 'expensive' %}checked{% endif %}> جدیدترین</label>
-                    <label class="block"><input type="radio" name="sort" value="cheapest" onchange="this.form.submit()" {% if request.args.get('sort') == 'cheapest' %}checked{% endif %}> ارزان‌ترین</label>
-                    <label class="block"><input type="radio" name="sort" value="expensive" onchange="this.form.submit()" {% if request.args.get('sort') == 'expensive' %}checked{% endif %}> گران‌ترین</label>
-                </form>
-            </div>
-
-            <!-- لیست محصولات -->
-            <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- لیست محصولات (گرید) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {% if products %}
                 {% for p in products %}
-                <div class="bg-white border rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
-                    <div>
-                        <div class="relative">
-                            <img src="{{ p.image_url }}" alt="{{ p.title }}" class="h-48 w-full object-contain mb-3">
-                            <button onclick="toggleCompareItem({{ p.id }}, this)" class="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow border text-xs font-bold hover:bg-gray-100" title="مقایسه">⚖️</button>
-                            <button onclick="toggleFav({{ p.id }}, this)" class="absolute top-2 left-2 bg-white p-1.5 rounded-full shadow border text-xs font-bold" title="علاقه‌مندی">❤️</button>
-                        </div>
-                        <span class="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ p.category }}</span>
-                        <h4 class="font-bold text-sm text-gray-800 mt-2 line-clamp-2 h-10">{{ p.title }}</h4>
-                    </div>
-                    <div class="mt-4 border-t pt-3">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs text-gray-400 line-through">{{ "{:,}".format(p.price) }} تومان</span>
-                            <span class="text-red-600 font-bold text-sm">{{ "{:,}".format(p.discount_price) }} تومان</span>
-                        </div>
-                        <a href="/product/{{ p.id }}" class="block text-center bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700">مشاهده و خرید</a>
-                    </div>
-                </div>
-                {% else %}
-                <p class="col-span-3 text-center text-xs text-gray-400 py-10">محصولی با این مشخصات یافت نشد.</p>
-                {% endfor %}
-            </div>
-        </div>
+                    <div class="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col justify-between shadow-md shadow-slate-200/50 hover:shadow-xl hover:border-blue-200 transition duration-300 text-right group">
+                        <div>
+                            <!-- کادر عکس محصول -->
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center h-52 mb-4 relative">
+                                {% if p.image_url %}
+                                    <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500">
+                                {% else %}
+                                    <span class="text-gray-400 text-xs font-medium">بدون تصویر</span>
+                                {% endif %}
+                                <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-blue-600 text-[11px] px-3 py-1 rounded-full font-bold shadow-sm">
+                                    {{ p.category }}
+                                </span>
+                            </div>
 
-        <!-- بخش وبلاگ و راهنمای خرید (سئو) -->
-        {% if posts %}
-        <div class="bg-white border rounded-2xl p-6 shadow-sm mt-8">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-sm text-gray-800">📖 آخرین مقالات و راهنمای خرید</h3>
-                <a href="/blog" class="text-xs text-blue-600 font-bold">مشاهده همه مقالات →</a>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {% for post in posts %}
-                <div class="border rounded-xl p-3 flex flex-col justify-between">
-                    <div>
-                        <img src="{{ post.image_url }}" class="h-32 w-full object-cover rounded-lg mb-2">
-                        <h4 class="font-bold text-xs text-gray-800 line-clamp-1">{{ post.title }}</h4>
+                            <h3 class="font-bold text-gray-900 text-base mb-2 line-clamp-1 group-hover:text-blue-600 transition">{{ p.title }}</h3>
+                            <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-4">{{ p.description }}</p>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-4 pt-3 border-t border-slate-100">
+                                <span class="text-xs text-gray-400">قیمت نهایی:</span>
+                                <span class="text-emerald-600 font-extrabold text-base">{{ p.discount_price }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
+                            </div>
+                            <a href="{{ url_for('product_detail', product_id=p.id) }}" class="block text-center bg-slate-50 hover:bg-blue-600 hover:text-white text-blue-600 border border-slate-200 py-3 rounded-2xl text-xs font-bold transition duration-200 shadow-sm">
+                                بررسی و خرید محصول &larr;
+                            </a>
+                        </div>
                     </div>
-                    <a href="/blog/{{ post.id }}" class="mt-3 block text-center bg-gray-50 py-1.5 rounded text-xs font-bold text-gray-700 hover:bg-gray-100">مطالعه مقاله</a>
-                </div>
                 {% endfor %}
-            </div>
+            {% else %}
+                <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                    <p class="text-gray-400 text-sm">هنوز محصولی به سایت اضافه نشده است.</p>
+                </div>
+            {% endif %}
         </div>
-        {% endif %}
     </main>
 
-    <script>
-        let compareList = JSON.parse(localStorage.getItem('compare') || '[]');
-        updateCompareUI();
+    <!-- فوتر ساده -->
+    <footer class="mt-20 border-t border-slate-200 bg-white/50 backdrop-blur-md py-6 text-center text-xs text-gray-500">
+        <div class="container mx-auto px-4">
+            تمامی حقوق محتوا و معرفی محصولات محفوظ است.
+        </div>
+    </footer>
 
-        function toggleCompareItem(id, btn) {
-            const index = compareList.indexOf(id);
-            if (index > -1) {
-                compareList.splice(index, 1);
-            } else {
-                if (compareList.length >= 3) {
-                    alert('حداکثر ۳ محصول را می‌توانید مقایسه کنید.');
-                    return;
-                }
-                compareList.push(id);
-            }
-            localStorage.setItem('compare', JSON.stringify(compareList));
-            updateCompareUI();
-        }
-
-        function updateCompareUI() {
-            const bar = document.getElementById('compare-bar');
-            const count = document.getElementById('compare-count');
-            count.innerText = compareList.length;
-            if (compareList.length > 0) {
-                bar.classList.remove('hidden');
-            } else {
-                bar.classList.add('hidden');
-            }
-        }
-
-        function clearCompare() {
-            compareList = [];
-            localStorage.removeItem('compare');
-            updateCompareUI();
-        }
-
-        function goToCompare() {
-            window.location.href = `/compare?ids=${compareList.join(',')}`;
-        }
-
-        function toggleFav(productId, btn) {
-            fetch(`/toggle-favorite/${productId}`, { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'unauthorized') {
-                    alert('لطفاً ابتدا وارد حساب کاربری خود شوید.');
-                    window.location.href = '/user-login';
-                } else if(data.status === 'added') {
-                    btn.style.background = '#fee2e2';
-                    alert('به علاقه‌مندی‌ها اضافه شد.');
-                } else {
-                    btn.style.background = '#ffffff';
-                    alert('از علاقه‌مندی‌ها حذف شد.');
-                }
-            });
-        }
-    </script>
 </body>
 </html>
