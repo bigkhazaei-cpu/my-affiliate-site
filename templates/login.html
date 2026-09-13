@@ -2,17 +2,20 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ورود مدیر | دیجی‌پلاس</title>
+    <title>ورود کاربر | دیجی‌پلاس</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-2xl shadow-sm border w-96 text-center">
-        <h2 class="text-base font-bold text-red-600 mb-4">ورود به پنل مدیریت</h2>
-        <form method="POST" class="space-y-4">
-            <input type="password" name="password" placeholder="رمز عبور ادمین..." required class="w-full border rounded-lg px-3 py-2 text-xs focus:outline-none">
-            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700">ورود</button>
+        <h2 class="text-base font-bold text-red-600 mb-4">ورود به حساب کاربری</h2>
+        {% if error %}<p class="text-red-500 text-xs mb-3">{{ error }}</p>{% endif %}
+        <form method="POST" class="space-y-4 text-xs">
+            <input type="email" name="email" placeholder="ایمیل..." required class="w-full border rounded p-2">
+            <input type="password" name="password" placeholder="رمز عبور..." required class="w-full border rounded p-2">
+            <button type="submit" class="w-full bg-red-600 text-white py-2.5 rounded font-bold">ورود</button>
         </form>
-        <a href="/" class="block mt-4 text-xs text-gray-400">← بازگشت به صفحه اصلی</a>
+        <p class="mt-4 text-xs text-gray-500">حساب ندارید؟ <a href="/register" class="text-blue-600 font-bold">ثبت‌نام کنید</a></p>
+        <a href="/" class="block mt-2 text-xs text-gray-400">← بازگشت به صفحه اصلی</a>
     </div>
 </body>
 </html>
