@@ -7,8 +7,9 @@
 </head>
 <body class="bg-gray-100 font-sans p-6">
     <div class="max-w-6xl mx-auto space-y-6">
+        <!-- هدر پنل -->
         <div class="bg-white p-4 rounded-2xl shadow-sm flex justify-between items-center">
-            <h1 class="font-bold text-sm text-red-600">پنل مدیریت و افزودن محصولات</h1>
+            <h1 class="font-bold text-sm text-red-600">پنل مدیریت و افزودن محصولات و مقالات</h1>
             <div class="flex gap-2">
                 <a href="/" class="bg-gray-100 px-3 py-1.5 rounded text-xs font-bold text-gray-700">مشاهده سایت</a>
                 <a href="/logout" class="bg-red-50 text-red-600 px-3 py-1.5 rounded text-xs font-bold">خروج</a>
@@ -19,6 +20,7 @@
         <div class="bg-white p-6 rounded-2xl shadow-sm">
             <h3 class="font-bold text-xs text-gray-800 mb-4">افزودن محصول جدید</h3>
             <form method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <input type="hidden" name="action" value="add_product">
                 <input type="text" name="title" placeholder="عنوان محصول" required class="border rounded p-2">
                 <input type="text" name="category" placeholder="دسته‌بندی (مثلاً دیجیتال، پوشاک)" required class="border rounded p-2">
                 <input type="number" name="price" placeholder="قیمت اصلی (تومان)" required class="border rounded p-2">
@@ -27,6 +29,19 @@
                 <input type="url" name="image_url" placeholder="لینک تصویر محصول (https://...)" required class="border rounded p-2 sm:col-span-2">
                 <textarea name="description" placeholder="توضیحات و بررسی محصول..." rows="3" required class="border rounded p-2 sm:col-span-2"></textarea>
                 <button type="submit" class="bg-green-600 text-white py-2.5 rounded font-bold sm:col-span-2 hover:bg-green-700">ثبت و انتشار محصول</button>
+            </form>
+        </div>
+
+        <!-- فرم افزودن مقاله وبلاگ (سئو) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-xs text-gray-800 mb-4">افزودن مقاله جدید به وبلاگ (سئو)</h3>
+            <form method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <input type="hidden" name="action" value="add_post">
+                <input type="text" name="post_title" placeholder="عنوان مقاله" required class="border rounded p-2">
+                <input type="text" name="post_slug" placeholder="اسلاگ URL (مثلا guide-buying-phone)" required class="border rounded p-2">
+                <input type="url" name="post_image" placeholder="لینک تصویر مقاله (https://...)" required class="border rounded p-2 sm:col-span-2">
+                <textarea name="post_content" placeholder="متن کامل مقاله..." rows="4" required class="border rounded p-2 sm:col-span-2"></textarea>
+                <button type="submit" class="bg-blue-600 text-white py-2.5 rounded font-bold sm:col-span-2 hover:bg-blue-700">انتشار مقاله در وبلاگ</button>
             </form>
         </div>
 
@@ -55,6 +70,39 @@
                                 <a href="/admin/delete/{{ p.id }}" onclick="return confirm('آیا از حذف این محصول مطمئن هستید؟')" class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">حذف</a>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="p-4 text-center text-gray-400">محصولی ثبت نشده است.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- لیست مقالات ثبت شده -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-xs text-gray-800 mb-4">مقالات وبلاگ ثبت‌شده</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b">
+                            <th class="p-3 text-right">شناسه</th>
+                            <th class="p-3 text-right">عنوان مقاله</th>
+                            <th class="p-3 text-right">اسلاگ</th>
+                            <th class="p-3 text-center">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr class="border-b">
+                            <td class="p-3">{{ post.id }}</td>
+                            <td class="p-3 font-bold">{{ post.title }}</td>
+                            <td class="p-3 text-gray-500">{{ post.slug }}</td>
+                            <td class="p-3 text-center">
+                                <a href="/admin/delete-post/{{ post.id }}" onclick="return confirm('آیا از حذف این مقاله مطمئن هستید؟')" class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">حذف</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="p-4 text-center text-gray-400">مقاله ای ثبت نشده است.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
