@@ -2,66 +2,49 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مقایسه محصولات | دیجی‌پلاس</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-gray-100 font-sans p-6">
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-sm">
-        <div class="flex justify-between items-center mb-6 border-b pb-4">
-            <h1 class="text-lg font-bold text-gray-800">مقایسه تخصصی محصولات</h1>
-            <a href="/" class="bg-gray-100 px-4 py-2 rounded-lg text-xs font-bold text-gray-600">← بازگشت به فروشگاه</a>
+<body class="bg-gray-50 font-sans p-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">مقایسه تخصصی محصولات</h1>
+            <a href="{{ url_for('home') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm hover:bg-gray-300 transition">بازگشت به فروشگاه</a>
         </div>
-        
-        <div class="overflow-x-auto">
-            <table class="w-full border-collapse border border-gray-200 text-xs">
-                <thead>
-                    <tr class="bg-gray-50">
-                        <th class="border p-4 w-1/4">مشخصات</th>
-                        {% for p in products %}
-                        <th class="border p-4 text-center">
-                            <img src="{{ p.image_url }}" class="h-32 mx-auto object-contain mb-2">
-                            <h2 class="font-bold text-gray-800">{{ p.title }}</h2>
-                        </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="border p-3 font-bold bg-gray-50">دسته‌بندی</td>
-                        {% for p in products %}
-                        <td class="border p-3 text-center text-gray-600">{{ p.category }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td class="border p-3 font-bold bg-gray-50">قیمت اصلی</td>
-                        {% for p in products %}
-                        <td class="border p-3 text-center text-gray-400 line-through">{{\ "{:,}\".format(p.price) }} تومان</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td class="border p-3 font-bold bg-gray-50">قیمت با تخفیف</td>
-                        {% for p in products %}
-                        <td class="border p-3 text-center text-red-600 font-extrabold">{{\ "{:,}\".format(p.discount_price) }} تومان</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td class="border p-3 font-bold bg-gray-50">توضیحات کوتاه</td>
-                        {% for p in products %}
-                        <td class="border p-3 text-gray-600 leading-relaxed">{{ p.description }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td class="border p-3 font-bold bg-gray-50">خرید</td>
-                        {% for p in products %}
-                        <td class="border p-3 text-center">
-                            <a href="{{ p.affiliate_link }}" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700">خرید از فروشگاه</a>
-                        </td>
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
+        {% if products %}
+            <div class="overflow-x-auto bg-white rounded-2xl shadow-sm p-6">
+                <div class="grid grid-cols-{{ products|length + 1 }} gap-4 min-w-[600px]">
+                    <!-- ستون مشخصات (هدینگ‌ها) -->
+                    <div class="space-y-6 font-bold text-gray-600 pt-32">
+                        <div>تصویر و نام</div>
+                        <div>دسته‌بندی</div>
+                        <div>قیمت اصلی</div>
+                        <div>قیمت با تخفیف</div>
+                        <div>توضیحات</div>
+                    </div>
+
+                    <!-- ستون‌های محصولات -->
+                    {% for p in products %}
+                        <div class="space-y-6 text-center border-r pr-4">
+                            <div>
+                                <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-24 h-24 object-cover mx-auto rounded-xl mb-2">
+                                <h3 class="font-bold text-gray-800 text-sm line-clamp-2">{{ p.title }}</h3>
+                            </div>
+                            <div class="text-sm bg-gray-50 py-2 rounded-lg">{{ p.category }}</div>
+                            <div class="text-sm text-gray-400 line-through py-2">{{ "{:,}".format(p.price) }} تومان</div>
+                            <div class="text-sm font-extrabold text-red-600 py-2">{{ "{:,}".format(p.discount_price) }} تومان</div>
+                            <div class="text-xs text-gray-600 text-right leading-relaxed bg-gray-50 p-3 rounded-xl">{{ p.description }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
+                <p class="text-gray-400 mb-4">هیچ محصولی برای مقایسه انتخاب نشده است.</p>
+                <a href="{{ url_for('home') }}" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm inline-block">انتخاب محصولات برای مقایسه</a>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
