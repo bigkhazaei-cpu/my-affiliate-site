@@ -14,35 +14,36 @@
 
         {% if products %}
             <div class="overflow-x-auto bg-white rounded-2xl shadow-sm p-6">
-                <div class="grid grid-cols-{{ products|length + 1 }} gap-4 min-w-[600px]">
+                <div class="grid grid-cols-1 md:grid-cols-{{ products|length + 1 }} gap-4 min-w-[600px]">
                     <!-- ستون مشخصات (هدینگ‌ها) -->
-                    <div class="space-y-6 font-bold text-gray-600 pt-32">
-                        <div>تصویر و نام</div>
-                        <div>دسته‌بندی</div>
-                        <div>قیمت اصلی</div>
-                        <div>قیمت با تخفیف</div>
-                        <div>توضیحات</div>
+                    <div class="space-y-6 font-bold text-gray-600 pt-28 hidden md:block">
+                        <div class="h-24 flex items-center">تصویر و نام</div>
+                        <div class="h-10 flex items-center">دسته‌بندی</div>
+                        <div class="h-10 flex items-center">قیمت اصلی</div>
+                        <div class="h-10 flex items-center">قیمت با تخفیف</div>
+                        <div class="pt-2">توضیحات</div>
                     </div>
 
                     <!-- ستون‌های محصولات -->
                     {% for p in products %}
-                        <div class="space-y-6 text-center border-r pr-4">
-                            <div>
-                                <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-24 h-24 object-cover mx-auto rounded-xl mb-2">
+                        <div class="space-y-6 text-center border-r pr-4 border-gray-100">
+                            <div class="h-auto md:h-28 flex flex-col items-center justify-center">
+                                <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-20 h-20 object-cover mx-auto rounded-xl mb-2">
                                 <h3 class="font-bold text-gray-800 text-sm line-clamp-2">{{ p.title }}</h3>
                             </div>
-                            <div class="text-sm bg-gray-50 py-2 rounded-lg">{{ p.category }}</div>
-                            <div class="text-sm text-gray-400 line-through py-2">{{ "{:,}".format(p.price) }} تومان</div>
-                            <div class="text-sm font-extrabold text-red-600 py-2">{{ "{:,}".format(p.discount_price) }} تومان</div>
-                            <div class="text-xs text-gray-600 text-right leading-relaxed bg-gray-50 p-3 rounded-xl">{{ p.description }}</div>
+                            <div class="text-sm bg-gray-50 py-2 px-3 rounded-lg">{{ p.category }}</div>
+                            <div class="text-sm text-gray-400 line-through py-2">{{ "{:,}".format(p.price) if p.price else 0 }} تومان</div>
+                            <div class="text-sm font-extrabold text-red-600 py-2">{{ "{:,}".format(p.discount_price) if p.discount_price else 0 }} تومان</div>
+                            <div class="text-xs text-gray-600 text-right leading-relaxed bg-gray-50 p-3 rounded-xl min-h-[100px]">{{ p.description or 'توضیحاتی ثبت نشده است.' }}</div>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         {% else %}
             <div class="bg-white rounded-2xl shadow-sm p-12 text-center">
-                <p class="text-gray-400 mb-4">هیچ محصولی برای مقایسه انتخاب نشده است.</p>
-                <a href="{{ url_for('home') }}" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm inline-block">انتخاب محصولات برای مقایسه</a>
+                <p class="text-gray-400 mb-4">هیچ محصولی برای مقایسه انتخاب نشده است یا آی‌دی محصولات ارسال نشده است.</p>
+                <p class="text-xs text-gray-400 mb-6">نکته: برای مقایسه، محصولات را به صورت `compare?ids=1,2` در آدرس بار فراخوانی کنید.</p>
+                <a href="{{ url_for('home') }}" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm inline-block hover:bg-red-700 transition">انتخاب محصولات برای مقایسه</a>
             </div>
         {% endif %}
     </div>
