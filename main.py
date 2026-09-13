@@ -3,16 +3,12 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from supabase import create_client, Client
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key_here"  # کلید امنیتی برای مدیریت Session
+app.secret_key = "your_secret_key_here"
 
-# اتصال به دیتابیس Supabase از طریق Environment Variables (امن و استاندارد برای Render)
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://your-project.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-anon-key")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ----------------------------------------------------
-# صفحه اصلی و فیلترها / جستجو / دسته‌بندی
-# ----------------------------------------------------
 @app.route("/")
 def home():
     category = request.args.get("category", "همه")
@@ -21,43 +17,34 @@ def home():
     min_price = request.args.get("min_price", type=int)
     max_price = request.args.get("max_price", type=int)
 
-    # کوئری پایه برای محصولات
     query = supabase.table("products").select("*")
 
-    # فیلتر دسته‌بندی
     if category and category != "همه":
         query = query.eq("category", category)
 
-    # فیلتر جستجو در عنوان
     if search_query:
         query = query.ilike("title", f"%{search_query}%")
 
-    # فیلتر قیمت
     if min_price is not None:
         query = query.gte("discount_price", min_price)
     if max_price is not None:
         query = query.lte("discount_price", max_price)
 
-    # مرتب‌سازی
     if sort_by == "cheapest":
         query = query.order("discount_price", desc=False)
     elif sort_by == "expensive":
         query = query.order("discount_price", desc=True)
-    else:  # پیش‌فرض جدیدترین
+    else:
         query = query.order("id", desc=True)
 
     products_res = query.execute()
     products = products_res.data
 
-    # دریافت آخرین مقالات وبلاگ جهت نمایش در صفحه اصلی
     posts_res = supabase.table("posts").select("*").order("id", desc=True).limit(3).execute()
     posts = posts_res.data
 
     return render_template("index.html", products=products, posts=posts, current_category=category)
 
-# ----------------------------------------------------
-# صفحه جزئیات محصول، نظرات و محصولات مرتبط
-# ----------------------------------------------------
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
     res = supabase.table("products").select("*").eq("id", product_id).execute()
@@ -65,11 +52,9 @@ def product_detail(product_id):
         return redirect(url_for("home"))
     product = res.data[0]
     
-    # محصولات مشابه در همان دسته‌بندی
     related_res = supabase.table("products").select("*").eq("category", product["category"]).neq("id", product_id).limit(3).execute()
     related_products = related_res.data
     
-    # دریافت نظرات محصول
     comments_res = supabase.table("comments").select("*").eq("product_id", product_id).order("id", desc=True).execute()
     comments = comments_res.data
 
@@ -90,9 +75,6 @@ def add_comment(product_id):
         }).execute()
     return redirect(url_for("product_detail", product_id=product_id))
 
-# ----------------------------------------------------
-# مقایسه محصولات
-# ----------------------------------------------------
 @app.route("/compare")
 def compare_products():
     ids_param = request.args.get("ids", "")
@@ -107,9 +89,6 @@ def compare_products():
             pass
     return render_template("compare.html", products=products)
 
-# ----------------------------------------------------
-# بخش مقالات و وبلاگ
-# ----------------------------------------------------
 @app.route("/blog")
 def blog_list():
     res = supabase.table("posts").select("*").order("id", desc=True).execute()
@@ -122,9 +101,6 @@ def blog_detail(post_id):
         return redirect(url_for("blog_list"))
     return render_template("blog_detail.html", post=res.data[0])
 
-# ----------------------------------------------------
-# سیستم احراز هویت کاربران (ثبت‌نام، ورود، خروج)
-# ----------------------------------------------------
 @app.route("/user-login", methods=["GET", "POST"])
 def user_login():
     if request.method == "POST":
@@ -145,12 +121,10 @@ def user_register():
         email = request.form.get("email")
         password = request.form.get("password")
         
-        # بررسی اینکه آیا کاربر قبلاً ثبت‌نام کرده است یا خیر
         existing = supabase.table("users").select("*").eq("email", email).execute()
         if existing.data:
             return render_template("register.html", error="این ایمیل قبلاً ثبت‌نام کرده است.")
         
-        # ثبت نام کاربر جدید در دیتابیس
         res = supabase.table("users").insert({"email": email, "password": password}).execute()
         if res.data:
             session["user_id"] = res.data[0]["id"]
@@ -165,17 +139,17 @@ def user_logout():
     session.clear()
     return redirect(url_for("home"))
 
-# ----------------------------------------------------
-# علاقه‌مندی‌ها (Favorites)
-# ----------------------------------------------------
+# برای پشتیبانی از هر دو نام مسیر خروج
+@app.route("/logout")
+def logout():
+    return redirect(url_for("user_logout"))
+
 @app.route("/toggle-favorite/<int:product_id>", methods=["POST"])
 def toggle_favorite(product_id):
     if "user_id" not in session:
         return jsonify({"status": "unauthorized"})
     
     user_id = session["user_id"]
-    
-    # بررسی وجود قبلی در علاقه‌مندی‌ها
     check = supabase.table("favorites").select("*").eq("user_id", user_id).eq("product_id", product_id).execute()
     
     if check.data:
