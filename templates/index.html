@@ -18,77 +18,148 @@
 </head>
 <body class="text-gray-800 antialiased">
 
-    <!-- هدر -->
+    <!-- نوار تخفیف بالای صفحه -->
+    <div class="bg-red-600 text-white text-xs py-2 text-center font-bold shadow-sm">
+        🎁 حراج بزرگ محصولات ویژه با بالاترین درصد تخفیف افیلیت 🔥
+    </div>
+
+    <!-- هدر کامل و حرفه‌ای -->
     <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-blue-600 tracking-tight">فروشگاه من</a>
-            <div class="flex items-center gap-4">
-                <span class="text-xs text-gray-500 hidden sm:inline-block">گلچین بهترین‌های بازار</span>
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- راست هدر: لوگو و منوها -->
+            <div class="flex items-center gap-6">
+                <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-red-600 tracking-tight">دیجی‌پلاس</a>
+                <nav class="hidden lg:flex items-center gap-5 text-xs font-medium text-gray-600">
+                    <a href="{{ url_for('home') }}" class="hover:text-red-600 transition">همه محصولات</a>
+                    <a href="#" class="hover:text-red-600 transition">دیجیتال</a>
+                    <a href="#" class="hover:text-red-600 transition">پوشاک</a>
+                    <a href="#" class="hover:text-red-600 transition">مجله و مقالات</a>
+                </nav>
             </div>
+
+            <!-- چپ هدر: جستجو و حساب کاربری -->
+            <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                <div class="relative flex-1 md:w-64">
+                    <input type="text" placeholder="جستجو در محصولات..." class="w-full bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-xl text-xs focus:outline-none focus:border-blue-500 text-gray-800">
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <a href="#" class="text-blue-600 font-bold hover:underline">حساب کاربری</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="#" class="text-gray-500 hover:text-red-600">خروج</a>
+                </div>
+            </div>
+
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 max-w-6xl">
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
         
         <!-- بنر خوش‌آمدگویی (معرفی هدف سایت) -->
         <div class="bg-gradient-to-l from-blue-600 to-indigo-600 rounded-3xl shadow-xl shadow-blue-500/10 p-8 sm:p-12 mb-10 text-white text-right relative overflow-hidden">
             <div class="relative z-10 max-w-2xl">
-                <span class="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-semibold mb-4">خرید هوشمند و مطمئن</span>
+                <span class="inline-block bg-white/25 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-semibold mb-4">خرید هوشمند و مطمئن</span>
                 <h1 class="text-2xl sm:text-4xl font-extrabold mb-4 leading-tight">بهترین کالاهای بازار را با بررسی تخصصی انتخاب کنید</h1>
                 <p class="text-blue-100 text-sm sm:text-base leading-relaxed mb-0">ما محصولات برتر را از معتبرترین فروشگاه‌ها گلچین کرده‌ایم تا بدون سردرگمی، بهترین خرید را داشته باشید.</p>
             </div>
-            <!-- دکوراسیون پس‌زمینه بنر -->
             <div class="absolute -left-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         </div>
 
-        <!-- بخش عنوان محصولات و فیلترها -->
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-gray-900">جدیدترین محصولات پیشنهادی</h2>
-            <span class="text-xs text-gray-500 font-medium">به‌روز شده امروز</span>
-        </div>
-
-        <!-- لیست محصولات (گرید) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {% if products %}
-                {% for p in products %}
-                    <div class="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col justify-between shadow-md shadow-slate-200/50 hover:shadow-xl hover:border-blue-200 transition duration-300 text-right group">
-                        <div>
-                            <!-- کادر عکس محصول -->
-                            <div class="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center h-52 mb-4 relative">
-                                {% if p.image_url %}
-                                    <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500">
-                                {% else %}
-                                    <span class="text-gray-400 text-xs font-medium">بدون تصویر</span>
-                                {% endif %}
-                                <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-blue-600 text-[11px] px-3 py-1 rounded-full font-bold shadow-sm">
-                                    {{ p.category }}
-                                </span>
-                            </div>
-
-                            <h3 class="font-bold text-gray-900 text-base mb-2 line-clamp-1 group-hover:text-blue-600 transition">{{ p.title }}</h3>
-                            <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-4">{{ p.description }}</p>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center justify-between mb-4 pt-3 border-t border-slate-100">
-                                <span class="text-xs text-gray-400">قیمت نهایی:</span>
-                                <span class="text-emerald-600 font-extrabold text-base">{{ p.discount_price }} <span class="text-xs font-normal text-gray-500">تومان</span></span>
-                            </div>
-                            <a href="{{ url_for('product_detail', product_id=p.id) }}" class="block text-center bg-slate-50 hover:bg-blue-600 hover:text-white text-blue-600 border border-slate-200 py-3 rounded-2xl text-xs font-bold transition duration-200 shadow-sm">
-                                بررسی و خرید محصول &larr;
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
-                    <p class="text-gray-400 text-sm">هنوز محصولی به سایت اضافه نشده است.</p>
+        <!-- چیدمان اصلی: محصولات در چپ و فیلتر پیشرفته در راست -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- ستون محصولات (۳ ستون از ۴ ستون) -->
+            <div class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">جدیدترین محصولات پیشنهادی</h2>
+                    <span class="text-xs text-gray-500 font-medium">به‌روز شده امروز</span>
                 </div>
-            {% endif %}
+
+                <!-- لیست محصولات (گرید) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {% if products %}
+                        {% for p in products %}
+                            <div class="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col justify-between shadow-md shadow-slate-200/50 hover:shadow-xl hover:border-blue-200 transition duration-300 text-right group">
+                                <div>
+                                    <!-- کادر عکس محصول -->
+                                    <div class="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center h-48 mb-4 relative">
+                                        {% if p.image_url %}
+                                            <img src="{{ p.image_url }}" alt="{{ p.title }}" class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500">
+                                        {% else %}
+                                            <span class="text-gray-400 text-xs font-medium">بدون تصویر</span>
+                                        {% endif %}
+                                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-blue-600 text-[11px] px-3 py-1 rounded-full font-bold shadow-sm">
+                                            {{ p.category }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="font-bold text-gray-900 text-sm mb-2 line-clamp-1 group-hover:text-blue-600 transition">{{ p.title }}</h3>
+                                    <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-4">{{ p.description }}</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-4 pt-3 border-t border-slate-100 text-xs">
+                                        <span class="text-gray-400">قیمت نهایی:</span>
+                                        <span class="text-emerald-600 font-extrabold text-sm">{{ p.discount_price }} <span class="text-[10px] font-normal text-gray-500">تومان</span></span>
+                                    </div>
+                                    <a href="{{ url_for('product_detail', product_id=p.id) }}" class="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-2xl text-xs font-bold transition duration-200 shadow-md shadow-blue-500/20">
+                                        بررسی و خرید محصول &larr;
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                            <p class="text-gray-400 text-sm">هنوز محصولی به سایت اضافه نشده است.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- سایدبار فیلتر و مرتب‌سازی (۱ ستون از ۴ ستون در سمت راست) -->
+            <div class="space-y-6">
+                <!-- فیلتر پیشرفته قیمت -->
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm text-right">
+                    <h3 class="font-bold text-gray-900 text-sm mb-4 pb-2 border-b border-slate-100">فیلتر پیشرفته قیمت</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] text-gray-500 mb-1">حداقل قیمت (تومان)</label>
+                            <input type="number" placeholder="مثلا ۱,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-500 mb-1">حداکثر قیمت (تومان)</label>
+                            <input type="number" placeholder="مثلا ۵۰,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
+                            اعمال فیلتر
+                        </button>
+                    </div>
+                </div>
+
+                <!-- مرتب‌سازی -->
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm text-right">
+                    <h3 class="font-bold text-gray-900 text-sm mb-4 pb-2 border-b border-slate-100">مرتب‌سازی</h3>
+                    <div class="space-y-3 text-xs text-gray-700">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sort" checked class="text-blue-600">
+                            <span>جدیدترین</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sort" class="text-blue-600">
+                            <span>ارزان‌ترین</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="sort" class="text-blue-600">
+                            <span>گران‌ترین</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <!-- فوتر ساده -->
+    <!-- فوتر -->
     <footer class="mt-20 border-t border-slate-200 bg-white/50 backdrop-blur-md py-6 text-center text-xs text-gray-500">
         <div class="container mx-auto px-4">
             تمامی حقوق محتوا و معرفی محصولات محفوظ است.
