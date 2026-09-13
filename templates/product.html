@@ -24,8 +24,8 @@
         <!-- کارت اصلی محصول -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div class="bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center h-80">
-                {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.title }}" class="w-full h-full object-cover">
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover">
                 {% else %}
                     <span class="text-gray-400 font-medium">بدون تصویر</span>
                 {% endif %}
