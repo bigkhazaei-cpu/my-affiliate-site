@@ -139,7 +139,7 @@ def user_login():
         return render_template("login.html", error="ایمیل یا رمز عبور اشتباه است.")
     return render_template("login.html")
 
-@app.route("/user-register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def user_register():
     if request.method == "POST":
         email = request.form.get("email")
