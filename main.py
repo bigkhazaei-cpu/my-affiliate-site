@@ -139,6 +139,27 @@ def user_login():
         return render_template("login.html", error="ایمیل یا رمز عبور اشتباه است.")
     return render_template("login.html")
 
+@app.route("/user-register", methods=["GET", "POST"])
+def user_register():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        # بررسی اینکه آیا کاربر قبلاً ثبت‌نام کرده است یا خیر
+        existing = supabase.table("users").select("*").eq("email", email).execute()
+        if existing.data:
+            return render_template("register.html", error="این ایمیل قبلاً ثبت‌نام کرده است.")
+        
+        # ثبت نام کاربر جدید در دیتابیس
+        res = supabase.table("users").insert({"email": email, "password": password}).execute()
+        if res.data:
+            session["user_id"] = res.data[0]["id"]
+            session["user_email"] = res.data[0]["email"]
+            return redirect(url_for("home"))
+            
+        return render_template("register.html", error="خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.")
+    return render_template("register.html")
+
 @app.route("/user-logout")
 def user_logout():
     session.clear()
