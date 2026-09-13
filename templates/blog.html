@@ -2,26 +2,69 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مجله و مقالات | دیجی‌پلاس</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>مجله و مقالات | فروشگاه من</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans p-6">
-    <div class="max-w-5xl mx-auto space-y-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
-            <h1 class="font-bold text-sm text-red-600">مجله راهنمای خرید و مقالات</h1>
-            <a href="/" class="bg-gray-100 px-4 py-2 rounded text-xs font-bold text-gray-700">← بازگشت به فروشگاه</a>
+<body class="bg-gray-100 font-sans pb-16">
+
+    <!-- هدر سایت -->
+    <header class="bg-white shadow-xs sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="font-black text-2xl text-red-600 flex items-center gap-2">
+                <i class="fa-solid fa-store"></i> فروشگاه من
+            </a>
+            <a href="{{ url_for('home') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                <i class="fa-solid fa-arrow-right"></i> بازگشت به فروشگاه
+            </a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {% for post in posts %}
-            <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-                <div>
-                    <img src="{{ post.image_url }}" class="h-40 w-full object-cover rounded-xl mb-3">
-                    <h2 class="font-bold text-sm text-gray-800 mb-2">{{ post.title }}</h2>
-                </div>
-                <a href="/blog/{{ post.id }}" class="block text-center bg-red-600 text-white py-2 rounded-xl text-xs font-bold mt-4">مطالعه مقاله</a>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex justify-between items-center flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-black text-gray-800">مجله آموزشی و مقالات</h1>
+                <p class="text-sm text-gray-400 mt-1">آخرین مطالب، راهنمایی‌های خرید و اخبار فروشگاه را اینجا بخوانید.</p>
             </div>
-            {% endfor %}
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('create_post') }}" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-red-600/20 flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> نوشتن مقاله جدید
+                </a>
+            {% endif %}
         </div>
-    </div>
+
+        <!-- گرید مقالات -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between group transition hover:shadow-md">
+                        <div>
+                            {% if post.image_url %}
+                                <div class="h-48 overflow-hidden bg-gray-100">
+                                    <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                </div>
+                            {% endif %}
+                            <div class="p-6 space-y-3">
+                                <div class="flex items-center gap-2 text-xs text-gray-400">
+                                    <i class="fa-solid fa-user-pen"></i> <span>{{ post.author or 'مدیر' }}</span>
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-base leading-snug line-clamp-2 group-hover:text-red-600 transition">{{ post.title }}</h3>
+                                <p class="text-gray-500 text-sm line-clamp-3 leading-relaxed">{{ post.content }}</p>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <a href="{{ url_for('blog_detail', post_id=post.id) }}" class="inline-flex items-center gap-2 text-red-600 font-bold text-sm hover:gap-3 transition-all">
+                                ادامه مطلب <i class="fa-solid fa-arrow-left text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400">
+                    مقاله‌ای یافت نشد.
+                </div>
+            {% endif %}
+        </div>
+    </main>
 </body>
 </html>
