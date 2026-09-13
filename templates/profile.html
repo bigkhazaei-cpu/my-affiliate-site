@@ -2,21 +2,21 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>پروفایل کاربری | دیجی‌پلاس</title>
+    <title>حساب کاربری | دیجی‌پلاس</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50 font-sans pb-12">
     <div class="max-w-4xl mx-auto p-6 mt-10">
         <!-- هدر پروفایل -->
         <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl font-bold">
+                <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-inner">
                     {{ session.get('user_email', 'U')[0].upper() }}
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">حساب کاربری</h1>
-                    <p class="text-gray-500 text-sm">{{ session.get('user_email') }}</p>
+                    <h1 class="text-xl font-bold text-gray-800">{{ session.get('user_name', 'کاربر گرامی') }}</h1>
+                    <p class="text-gray-500 text-sm mt-1">{{ session.get('user_email') }}</p>
                 </div>
             </div>
             <a href="{{ url_for('user_logout') }}" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition text-sm font-medium">
@@ -24,22 +24,39 @@
             </a>
         </div>
 
-        <!-- فرم ویرایش اطلاعات -->
+        <!-- اطلاعات کاربری و ویرایش مشخصات -->
         <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">ویرایش مشخصات</h2>
-            <form action="{{ url_for('edit_profile') }}" method="POST" class="flex gap-4 items-end">
-                <div class="flex-1">
-                    <label class="block text-sm text-gray-600 mb-2">ایمیل جدید</label>
-                    <input type="email" name="email" value="{{ session.get('user_email') }}" required
-                           class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:border-red-500">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-regular fa-user text-red-600"></i> اطلاعات حساب کاربری
+            </h2>
+            <form action="{{ url_for('update_profile') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">نام و نام خانوادگی</label>
+                    <input type="text" name="name" value="{{ session.get('user_name', '') }}" placeholder="نام خود را وارد کنید"
+                           class="w-full px-4 py-2 border rounded-xl text-sm focus:outline-none focus:border-red-500">
                 </div>
-                <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">ذخیره تغییرات</button>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">شماره موبایل</label>
+                    <input type="text" name="phone" value="{{ session.get('user_phone', '') }}" placeholder="09123456789"
+                           class="w-full px-4 py-2 border rounded-xl text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-gray-600 mb-2">ایمیل حساب</label>
+                    <input type="email" value="{{ session.get('user_email') }}" disabled
+                           class="w-full px-4 py-2 border bg-gray-100 text-gray-500 rounded-xl text-sm cursor-not-allowed">
+                    <span class="text-xs text-gray-400 mt-1 block">امکان تغییر ایمیل در حال حاضر وجود ندارد.</span>
+                </div>
+                <div class="md:col-span-2 text-left mt-2">
+                    <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm hover:bg-red-700 transition">ذخیره تغییرات مشخصات</button>
+                </div>
             </form>
         </div>
 
         <!-- لیست علاقه‌مندی‌ها -->
         <div class="bg-white rounded-2xl shadow-sm p-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">محصولات نشان‌شده (علاقه‌مندی‌ها)</h2>
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-regular fa-heart text-red-600"></i> محصولات نشان‌شده (علاقه‌مندی‌ها)
+            </h2>
             {% if favorite_products %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {% for product in favorite_products %}
@@ -58,12 +75,12 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-gray-400 text-center py-8">هنوز محصولی را به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
+                <p class="text-gray-400 text-center py-8 text-sm">هنوز محصولی را به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
             {% endif %}
         </div>
         
         <div class="text-center mt-6">
-            <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-red-600 text-sm font-medium">بازگشت به صفحه اصلی</a>
+            <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-red-600 text-sm font-medium">بازگشت به صفحه اصلی فروشگاه</a>
         </div>
     </div>
 </body>
