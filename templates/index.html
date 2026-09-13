@@ -9,15 +9,15 @@
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Tahoma, sans-serif; }
+        body { font-family: Tahoma, sans-serif; text-align: right; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen pb-20">
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen pb-24">
 
     <!-- هدر سایت -->
     <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-6">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
                 <a href="/" class="text-xl font-bold text-red-600 flex items-center gap-2">
                     <i class="fas fa-store"></i> فروشگاه من
                 </a>
@@ -27,18 +27,18 @@
                 </nav>
             </div>
             
-            <div class="flex items-center gap-3">
-                <a href="/compare" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+                <a href="/compare" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
                     <i class="fas fa-balance-scale"></i> مقایسه
                 </a>
-                <a href="/cart" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
+                <a href="/cart" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition flex items-center gap-1 text-gray-700">
                     <i class="fas fa-shopping-cart"></i> سبد خرید
                 </a>
                 {% if session.get('user_id') %}
-                    <a href="/profile" class="text-sm bg-red-50 text-red-600 px-3 py-2 rounded-lg font-medium transition">حساب کاربری</a>
-                    <a href="/user-logout" class="text-sm text-gray-500 hover:text-red-600 transition">خروج</a>
+                    <a href="/profile" class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-medium transition">حساب کاربری</a>
+                    <a href="/user-logout" class="text-xs text-gray-500 hover:text-red-600 transition">خروج</a>
                 {% else %}
-                    <a href="/user-login" class="text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">ورود / ثبت‌نام</a>
+                    <a href="/user-login" class="text-xs bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">ورود / ثبت‌نام</a>
                 {% endif %}
             </div>
         </div>
@@ -51,13 +51,13 @@
         <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
             <form action="/" method="GET" class="w-full md:w-1/2 flex gap-2">
                 <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجوی محصول..." class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-red-500">
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm transition hover:bg-red-700">جستجو</button>
+                <button type="submit" class="bg-red-600 text-white px-5 py-2 rounded-xl text-sm transition hover:bg-red-700 shrink-0">جستجو</button>
             </form>
             
-            <div class="flex gap-2 text-sm">
-                <a href="/?sort=newest" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">جدیدترین</a>
-                <a href="/?sort=cheapest" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">ارزان‌ترین</a>
-                <a href="/?sort=expensive" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">گران‌ترین</a>
+            <div class="flex gap-2 text-xs flex-wrap">
+                <a href="/?sort=newest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">جدیدترین</a>
+                <a href="/?sort=cheapest" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">ارزان‌ترین</a>
+                <a href="/?sort=expensive" class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">گران‌ترین</a>
             </div>
         </div>
 
@@ -72,23 +72,22 @@
                             <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-48 object-cover">
                         </a>
                         <div class="p-4">
-                            <a href="/product/{{ product.id }}" class="font-bold text-sm text-gray-800 hover:text-red-600 line-clamp-2 mb-2">
+                            <a href="/product/{{ product.id }}" class="font-bold text-sm text-gray-800 hover:text-red-600 line-clamp-2 mb-2 block h-10">
                                 {{ product.title }}
                             </a>
-                            <div class="text-red-600 font-bold text-base">
+                            <div class="text-red-600 font-bold text-sm">
                                 {{ "{:,}".format(product.discount_price) }} تومان
                             </div>
                         </div>
                     </div>
                     <div class="p-4 pt-0 flex justify-between items-center border-t border-gray-50 mt-2">
-                        <!-- دکمه مقایسه روی کارت محصول -->
                         <button type="button" 
                                 onclick="toggleCompare({{ product.id }}, '{{ product.title }}')" 
                                 class="compare-btn text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
                             <i class="fas fa-balance-scale"></i> مقایسه
                         </button>
                         <a href="/product/{{ product.id }}" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition">
-                            مشاهده جزئیات
+                            جزئیات
                         </a>
                     </div>
                 </div>
@@ -109,11 +108,15 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {% for post in posts %}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-36 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-sm mb-2 text-gray-800 line-clamp-1">{{ post.title }}</h3>
-                        <p class="text-xs text-gray-500 line-clamp-2 mb-4">{{ post.content }}</p>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-36 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-sm mb-2 text-gray-800 line-clamp-1">{{ post.title }}</h3>
+                            <p class="text-xs text-gray-500 line-clamp-2 mb-4">{{ post.content }}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0">
                         <a href="/blog/{{ post.id }}" class="text-xs text-red-600 font-medium hover:underline">ادامه مطلب...</a>
                     </div>
                 </div>
