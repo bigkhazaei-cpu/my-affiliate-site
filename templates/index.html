@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <!-- هدر اصلی فروشگاه (مدل دیجی‌کالا) -->
+    <!-- هدر اصلی فروشگاه -->
     <header class="bg-white shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             
@@ -43,15 +43,15 @@
             <!-- نوار جستجوی مرکزی بزرگ -->
             <div class="w-full md:w-5/12">
                 <form action="/" method="GET" class="relative flex items-center">
-                    <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجو در محصولات..." class="w-full bg-gray-100 border border-transparent focus:border-red-500 focus:bg-white rounded-xl px-4 py-2.5 pr-10 text-sm focus:outline-none transition">
-                    <button type="submit" class="absolute right-3 text-gray-400 hover:text-red-600 transition">
+                    <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجو در محصولات..." class="w-full bg-gray-100 border border-transparent focus:border-red-500 focus:bg-white rounded-xl px-4 py-2.5 pl-10 pr-4 text-sm focus:outline-none transition text-right">
+                    <button type="submit" class="absolute left-3 text-gray-400 hover:text-red-600 transition">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
             </div>
 
             <!-- دکمه‌های حساب کاربری، سبد خرید و مقایسه -->
-            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+            <div class="flex items-center gap-3 w-full md:w-auto justify-start md:justify-end">
                 <a href="/compare" class="relative bg-gray-100 hover:bg-gray-200 text-gray-700 p-2.5 rounded-xl transition flex items-center gap-1 text-xs" title="مقایسه محصولات">
                     <i class="fas fa-balance-scale text-sm"></i>
                     <span class="hidden sm:inline">مقایسه</span>
@@ -86,9 +86,8 @@
     <!-- محتوای اصلی -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
         
-        <!-- بنرهای بالایی (اسلایدر و بنر کناری مشابه دیجی‌کالا) -->
+        <!-- بنرهای بالایی -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-            <!-- بنر بزرگ اسلایدر گالری -->
             <div class="lg:col-span-2 bg-gradient-to-r from-red-600 to-rose-500 rounded-2xl p-8 text-white flex flex-col justify-between shadow-md relative overflow-hidden">
                 <div class="z-10 max-w-lg">
                     <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold mb-3 inline-block">پیشنهاد ویژه شگفت‌انگیز</span>
@@ -96,11 +95,9 @@
                     <p class="text-xs md:text-sm text-white/90 mb-6 leading-relaxed">بهترین محصولات و گجت‌های هوشمند با تخفیف‌های استثنایی و ارسال سریع. همین حالا خرید کنید!</p>
                     <a href="#products-section" class="bg-white text-red-600 hover:bg-gray-100 font-bold px-6 py-2.5 rounded-xl text-xs transition inline-block">مشاهده محصولات</a>
                 </div>
-                <!-- گرافیک پس‌زمینه دکوراتیو -->
                 <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
             </div>
 
-            <!-- بنرهای کناری تبلیغاتی -->
             <div class="flex flex-col gap-4">
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
@@ -130,7 +127,7 @@
             </div>
         </div>
 
-        <!-- لیست محصولات (کارت‌های مدرن) -->
+        <!-- لیست محصولات -->
         {% if products %}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {% for product in products %}
@@ -171,7 +168,7 @@
             </div>
         {% endif %}
 
-        <!-- بخش مقالات آموزشی (بلاگ) -->
+        <!-- بخش مقالات آموزشی -->
         {% if posts %}
         <div class="mt-16">
             <div class="flex justify-between items-center mb-6">
@@ -203,7 +200,7 @@
 
     </main>
 
-    <!-- فوتر حرفه‌ای فروشگاه -->
+    <!-- فوتر فروشگاه -->
     <footer class="bg-white border-t border-gray-200 mt-20 py-10 text-xs text-gray-500">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-right">
             <div>
