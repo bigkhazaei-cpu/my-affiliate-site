@@ -213,5 +213,22 @@ def user_profile():
         
     return render_template("profile.html", favorite_products=favorite_products)
 
+@app.route("/profile/edit", methods=["POST"])
+def edit_profile():
+    if "user_id" not in session:
+        return redirect(url_for("user_login"))
+    
+    user_id = session["user_id"]
+    new_email = request.form.get("email")
+    
+    if new_email:
+        try:
+            supabase.table("users").update({"email": new_email}).eq("id", user_id).execute()
+            session["user_email"] = new_email
+        except Exception as e:
+            print("Edit profile error:", e)
+            
+    return redirect(url_for("user_profile"))
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
