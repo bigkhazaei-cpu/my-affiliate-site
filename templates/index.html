@@ -31,22 +31,36 @@
             <div class="flex items-center gap-6">
                 <a href="{{ url_for('home') }}" class="text-xl font-extrabold text-red-600 tracking-tight">دیجی‌پلاس</a>
                 <nav class="hidden lg:flex items-center gap-5 text-xs font-medium text-gray-600">
-                    <a href="{{ url_for('home') }}" class="hover:text-red-600 transition">همه محصولات</a>
-                    <a href="#" class="hover:text-red-600 transition">دیجیتال</a>
-                    <a href="#" class="hover:text-red-600 transition">پوشاک</a>
-                    <a href="#" class="hover:text-red-600 transition">مجله و مقالات</a>
+                    <a href="{{ url_for('home') }}" class="hover:text-red-600 transition {% if current_category == 'همه' %}text-red-600 font-bold{% endif %}">همه محصولات</a>
+                    <a href="{{ url_for('home', category='دیجیتال') }}" class="hover:text-red-600 transition {% if current_category == 'دیجیتال' %}text-red-600 font-bold{% endif %}">دیجیتال</a>
+                    <a href="{{ url_for('home', category='پوشاک') }}" class="hover:text-red-600 transition {% if current_category == 'پوشاک' %}text-red-600 font-bold{% endif %}">پوشاک</a>
+                    <a href="{{ url_for('blog_list') }}" class="hover:text-red-600 transition">مجله و مقالات</a>
+                    <a href="{{ url_for('compare_products') }}" class="hover:text-red-600 transition">مقایسه محصولات</a>
                 </nav>
             </div>
 
             <!-- چپ هدر: جستجو و حساب کاربری -->
             <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                <div class="relative flex-1 md:w-64">
-                    <input type="text" placeholder="جستجو در محصولات..." class="w-full bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-xl text-xs focus:outline-none focus:border-blue-500 text-gray-800">
-                </div>
+                <!-- فرم جستجو -->
+                <form action="{{ url_for('home') }}" method="GET" class="relative flex-1 md:w-64">
+                    {% if current_category and current_category != 'همه' %}
+                        <input type="hidden" name="category" value="{{ current_category }}">
+                    {% endif %}
+                    {% if request.args.get('sort') %}
+                        <input type="hidden" name="sort" value="{{ request.args.get('sort') }}">
+                    {% endif %}
+                    <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="جستجو در محصولات..." class="w-full bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-xl text-xs focus:outline-none focus:border-blue-500 text-gray-800">
+                </form>
+
+                <!-- بخش حساب کاربری / ورود -->
                 <div class="flex items-center gap-2 text-xs">
-                    <a href="#" class="text-blue-600 font-bold hover:underline">حساب کاربری</a>
-                    <span class="text-gray-300">|</span>
-                    <a href="#" class="text-gray-500 hover:text-red-600">خروج</a>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('user_profile') }}" class="text-blue-600 font-bold hover:underline">حساب کاربری</a>
+                        <span class="text-gray-300">|</span>
+                        <a href="{{ url_for('user_logout') }}" class="text-gray-500 hover:text-red-600">خروج</a>
+                    {% else %}
+                        <a href="{{ url_for('user_login') }}" class="text-blue-600 font-bold hover:underline">ورود / ثبت‌نام</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -65,9 +79,17 @@
             <div class="absolute -left-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         </div>
 
-        <!-- چیدمان اصلی: محصولات در چپ و فیلتر پیشرفته در راست -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- فرم اصلی تجمیع شده برای فیلتر قیمت، مرتب‌سازی، جستجو و دسته‌بندی -->
+        <form method="GET" action="{{ url_for('home') }}" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
+            <!-- حفظ پارامترهای جستجو و دسته‌بندی هنگام فیلتر قیمت یا مرتب‌سازی -->
+            {% if current_category and current_category != 'همه' %}
+                <input type="hidden" name="category" value="{{ current_category }}">
+            {% endif %}
+            {% if request.args.get('q') %}
+                <input type="hidden" name="q" value="{{ request.args.get('q') }}">
+            {% endif %}
+
             <!-- ستون محصولات (۳ ستون از ۴ ستون) -->
             <div class="lg:col-span-3">
                 <div class="flex justify-between items-center mb-6">
@@ -110,7 +132,7 @@
                         {% endfor %}
                     {% else %}
                         <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
-                            <p class="text-gray-400 text-sm">هنوز محصولی به سایت اضافه نشده است.</p>
+                            <p class="text-gray-400 text-sm">محصولی با این مشخصات یافت نشد.</p>
                         </div>
                     {% endif %}
                 </div>
@@ -124,13 +146,13 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-[11px] text-gray-500 mb-1">حداقل قیمت (تومان)</label>
-                            <input type="number" placeholder="مثلا ۱,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                            <input type="number" name="min_price" value="{{ request.args.get('min_price', '') }}" placeholder="مثلا ۱,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
                         </div>
                         <div>
                             <label class="block text-[11px] text-gray-500 mb-1">حداکثر قیمت (تومان)</label>
-                            <input type="number" placeholder="مثلا ۵۰,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                            <input type="number" name="max_price" value="{{ request.args.get('max_price', '') }}" placeholder="مثلا ۵۰,۰۰۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
                         </div>
-                        <button class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
                             اعمال فیلتر
                         </button>
                     </div>
@@ -141,22 +163,22 @@
                     <h3 class="font-bold text-gray-900 text-sm mb-4 pb-2 border-b border-slate-100">مرتب‌سازی</h3>
                     <div class="space-y-3 text-xs text-gray-700">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="sort" checked class="text-blue-600">
+                            <input type="radio" name="sort" value="newest" onchange="this.form.submit()" {% if request.args.get('sort', 'newest') == 'newest' %}checked{% endif %} class="text-blue-600">
                             <span>جدیدترین</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="sort" class="text-blue-600">
+                            <input type="radio" name="sort" value="cheapest" onchange="this.form.submit()" {% if request.args.get('sort') == 'cheapest' %}checked{% endif %} class="text-blue-600">
                             <span>ارزان‌ترین</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="sort" class="text-blue-600">
+                            <input type="radio" name="sort" value="expensive" onchange="this.form.submit()" {% if request.args.get('sort') == 'expensive' %}checked{% endif %} class="text-blue-600">
                             <span>گران‌ترین</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-        </div>
+        </form>
     </main>
 
     <!-- فوتر -->
