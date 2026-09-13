@@ -3,101 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دیجی‌پلاس - فروشگاه و بررسی محصولات</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>دیجی‌پلاس | فروشگاه تخصصی و مرجع تخفیف‌ها</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
 
-    <div class="digi-topbar">
-        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 🔥
+    <!-- بنر بالای سایت -->
+    <div class="bg-red-600 text-white text-center py-2 text-xs font-bold">
+        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 📦
     </div>
 
-    <header class="digi-header">
-        <div class="header-right">
-            <a href="/" class="site-logo">دیجی‌پلاس</a>
-            <form action="/" method="GET" class="search-box">
-                <svg style="width:20px; color: #707579;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" name="search" placeholder="جستجو در میان محصولات..." value="{{ search_query }}">
-            </form>
-        </div>
-        <div class="header-left">
-            <a href="/admin" class="btn-admin">پنل مدیریت</a>
+    <!-- هدر سایت -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <a href="/" class="text-xl font-black text-red-600">دیجی‌پلاس</a>
+                <nav class="hidden md:flex gap-4 text-sm font-semibold text-gray-600">
+                    <a href="/?category=همه" class="hover:text-red-600">همه محصولات</a>
+                    <a href="/?category=دیجیتال" class="hover:text-red-600">دیجیتال</a>
+                    <a href="/?category=پوشاک" class="hover:text-red-600">پوشاک</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-3">
+                <form action="/" method="GET" class="hidden sm:flex">
+                    <input type="text" name="q" placeholder="جستجو در میان محصولات..." class="border rounded-r px-3 py-1 text-xs focus:outline-none w-48">
+                    <button type="submit" class="bg-gray-100 border border-r-0 px-3 py-1 text-xs rounded-l">🔍</button>
+                </form>
+                <a href="/admin" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs font-bold">پنل مدیریت</a>
+            </div>
         </div>
     </header>
 
-    <nav class="digi-navbar">
-        <a href="/">همه محصولات</a>
-        {% for cat in categories %}
-            <a href="/?category={{ cat }}">{{ cat }}</a>
-        {% endfor %}
-    </nav>
-
-    <div class="container">
-        <!-- فیلتر و مرتب‌سازی اضافی -->
-        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; border: 1px solid #e0e0e0;">
-            <form method="GET" action="/" style="display: flex; gap: 15px; width: 100%; flex-wrap: wrap;">
-                <input type="hidden" name="search" value="{{ search_query }}">
-                <input type="hidden" name="category" value="{{ selected_category }}">
-                <select name="sort" class="form-control" style="width: 200px; margin-bottom: 0;">
-                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>جدیدترین</option>
-                    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>ارزان‌ترین</option>
-                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>گران‌ترین</option>
-                </select>
-                <button type="submit" class="btn-admin" style="background: #ef4056; color: white; border: none; cursor: pointer;">اعمال مرتب‌سازی</button>
-            </form>
+    <!-- محتوای اصلی -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        
+        <!-- تایمر شگفت‌انگیز زنده -->
+        <div class="bg-gradient-to-r from-red-600 to-pink-600 text-white p-4 rounded-xl shadow mb-6 flex flex-col sm:flex-row justify-between items-center">
+            <span class="font-bold text-sm mb-2 sm:mb-0">⚡️ حراج بزرگ محصولات ویژه با بالاترین تخفیف‌ها</span>
+            <div id="countdown" class="font-mono font-bold text-sm bg-black bg-opacity-20 px-3 py-1 rounded"></div>
         </div>
 
-        <!-- گرید محصولات -->
-        <div class="products-grid">
-            {% if products %}
-                {% for product in products %}
-                    <div class="product-card">
-                        {% if product.discount_price and product.discount_price > 0 and product.price and product.price > product.discount_price %}
-                            <span class="discount-badge">
-                                {% set diff = product.price - product.discount_price %}
-                                {% set pct = (diff / product.price * 100)|int %}
-                                {{ pct }}%
-                            </span>
-                        {% endif %}
+        <!-- ابزار مقایسه شناور -->
+        <div id="compare-bar" class="hidden fixed bottom-5 right-5 bg-white border-2 border-red-600 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-4">
+            <span class="text-xs font-bold text-gray-700">محصولات انتخاب شده برای مقایسه: <span id="compare-count">0</span></span>
+            <button onclick="goToCompare()" class="bg-red-600 text-white px-4 py-2 rounded text-xs font-bold">شروع مقایسه</button>
+            <button onclick="clearCompare()" class="text-gray-400 text-xs font-bold">حذف همه</button>
+        </div>
 
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-img">
-                        {% else %}
-                            <div class="product-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
-                        {% endif %}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- سایدبار فیلتر و مرتب‌سازی -->
+            <div class="bg-white p-4 rounded-xl shadow-sm h-fit">
+                <h3 class="font-bold text-sm mb-3 text-gray-800">مرتب‌سازی محصولات</h3>
+                <form action="/" method="GET" class="space-y-2 text-xs">
+                    <input type="hidden" name="category" value="{{ current_category }}">
+                    <label class="block"><input type="radio" name="sort" value="newest" onchange="this.form.submit()" {% if request.args.get('sort') != 'cheapest' and request.args.get('sort') != 'expensive' %}checked{% endif %}> جدیدترین</label>
+                    <label class="block"><input type="radio" name="sort" value="cheapest" onchange="this.form.submit()" {% if request.args.get('sort') == 'cheapest' %}checked{% endif %}> ارزان‌ترین</label>
+                    <label class="block"><input type="radio" name="sort" value="expensive" onchange="this.form.submit()" {% if request.args.get('sort') == 'expensive' %}checked{% endif %}> گران‌ترین</label>
+                </form>
+            </div>
 
-                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-title">{{ product.title }}</a>
-                        
-                        <div class="price-box">
-                            {% if product.discount_price and product.discount_price > 0 %}
-                                <div class="old-price">{{ product.price }} تومان</div>
-                                <div class="new-price">{{ product.discount_price }} <span class="currency">تومان</span></div>
-                            {% else %}
-                                <div class="new-price">{{ product.price if product.price > 0 else 'توافقی' }} <span class="currency">{% if product.price > 0 %}تومان{% endif %}</span></div>
-                            {% endif %}
+            <!-- لیست محصولات -->
+            <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for p in products %}
+                <div class="bg-white border rounded-xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition">
+                    <div>
+                        <div class="relative">
+                            <img src="{{ p.image_url }}" alt="{{ p.title }}" class="h-48 w-full object-contain mb-3">
+                            <button onclick="toggleCompareItem({{ p.id }}, this)" class="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow border text-xs font-bold hover:bg-gray-100" title="افزودن برای مقایسه">⚖️</button>
                         </div>
-
-                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn-card">مشاهده و خرید</a>
+                        <span class="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ p.category }}</span>
+                        <h4 class="font-bold text-sm text-gray-800 mt-2 line-clamp-2 h-10">{{ p.title }}</h4>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p style="text-align: center; grid-column: 1 / -1; color: #64748b; padding: 40px;">محصولی یافت نشد.</p>
-            {% endif %}
-        </div>
-
-        <!-- صفحه‌بندی -->
-        {% if total_pages > 1 %}
-            <div style="display: flex; justify-content: center; gap: 8px; margin-top: 40px;">
-                {% for p in range(1, total_pages + 1) %}
-                    <a href="{{ url_for('home', page=p, search=search_query, category=selected_category, sort=sort_by) }}" 
-                       class="btn-admin {% if p == current_page %}active{% endif %}" 
-                       style="{% if p == current_page %}background: #ef4056; color: white; border-color: #ef4056;{% endif %}">
-                        {{ p }}
-                    </a>
+                    <div class="mt-4 border-t pt-3">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs text-gray-400 line-through">{{\ "{:,}\".format(p.price) }} تومان</span>
+                            <span class="text-red-600 font-bold text-sm">{{\ "{:,}\".format(p.discount_price) }} تومان</span>
+                        </div>
+                        <a href="/product/{{ p.id }}" class="block text-center bg-red-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-red-700">مشاهده و خرید</a>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
-        {% endif %}
+        </div>
+    </main>
+
+    <!-- دستیار هوش مصنوعی خرید (ویجت شناور) -->
+    <div class="fixed bottom-5 left-5 z-50">
+        <div id="ai-chat-box" class="hidden w-80 bg-white border rounded-xl shadow-2xl p-4 mb-2">
+            <div class="flex justify-between items-center border-b pb-2 mb-2">
+                <span class="font-bold text-xs text-red-600">دستیار هوشمند خرید 🤖</span>
+                <button onclick="toggleChat()" class="text-gray-400 font-bold">×</button>
+            </div>
+            <div id="chat-messages" class="h-52 overflow-y-auto text-xs space-y-2 mb-2 p-2 bg-gray-50 rounded">
+                <p class="text-gray-600 bg-white p-2 rounded shadow-sm">سلام! دنبال چه محصولی با چه بودجه‌ای هستید تا بهترین پیشنهاد را به شما بدهم؟</p>
+            </div>
+            <div class="flex gap-1">
+                <input type="text" id="chat-input" placeholder="مثلاً گوشی تا ۷۰ میلیون..." class="border rounded px-2 py-1 text-xs flex-1">
+                <button onclick="sendChatMessage()" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">ارسال</button>
+            </div>
+        </div>
+        <button onclick="toggleChat()" class="bg-red-600 text-white p-3 rounded-full shadow-lg font-bold flex items-center gap-2 text-xs">💬 مشاور خرید</button>
     </div>
 
+    <script>
+        // اسکریپت تایمر
+        const countDownDate = new Date().getTime() + (14 * 60 * 60 * 1000);
+        setInterval(() => {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("countdown").innerHTML = `⏳ ${h} ساعت و ${m} دقیقه و ${s} ثانیه تا پایان حراج`;
+        }, 1000);
+
+        // اسکریپت چت هوش مصنوعی
+        function toggleChat() {
+            document.getElementById('ai-chat-box').classList.toggle('hidden');
+        }
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+            const box = document.getElementById('chat-messages');
+            box.innerHTML += `<p class="text-left bg-blue-100 p-2 rounded">${msg}</p>`;
+            input.value = '';
+            setTimeout(() => {
+                box.innerHTML += `<p class="text-right bg-white p-2 rounded shadow-sm">پیشنهاد میکنم محصولات دیجیتال و پوشاک حراجی را در لیست بالای سایت بررسی کنید، تخفیف‌های عالی دارند!</p>`;
+                box.scrollTop = box.scrollHeight;
+            }, 800);
+        }
+
+        // اسکریپت مقایسه محصولات
+        let compareList = JSON.parse(localStorage.getItem('compare') || '[]');
+        updateCompareUI();
+
+        function toggleCompareItem(id, btn) {
+            const index = compareList.indexOf(id);
+            if (index > -1) {
+                compareList.splice(index, 1);
+                btn.classList.remove('bg-red-100');
+            } else {
+                if (compareList.length >= 3) {
+                    alert('حداکثر ۳ محصول را می‌توانید همزمان مقایسه کنید.');
+                    return;
+                }
+                compareList.push(id);
+                btn.classList.add('bg-red-100');
+            }
+            localStorage.setItem('compare', JSON.stringify(compareList));
+            updateCompareUI();
+        }
+
+        function updateCompareUI() {
+            const bar = document.getElementById('compare-bar');
+            const count = document.getElementById('compare-count');
+            count.innerText = compareList.length;
+            if (compareList.length > 0) {
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        function clearCompare() {
+            compareList = [];
+            localStorage.removeItem('compare');
+            updateCompareUI();
+        }
+
+        function goToCompare() {
+            window.location.href = `/compare?ids=${compareList.join(',')}`;
+        }
+    </script>
 </body>
 </html>
