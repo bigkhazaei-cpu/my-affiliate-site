@@ -5,32 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ثبت‌نام در سایت</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style> body { font-family: 'Vazirmatn', sans-serif; } </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">ثبت‌نام کاربر جدید</h2>
-        
+<body class="bg-gray-50 flex items-center justify-center min-h-screen px-4">
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-md w-full">
+        <div class="text-center mb-8">
+            <a href="{{ url_for('home') }}" class="text-2xl font-black text-blue-600 tracking-tight">فروشگاه من</a>
+            <h1 class="text-xl font-bold text-gray-800 mt-3">ساخت حساب کاربری جدید</h1>
+            <p class="text-sm text-gray-400 mt-1">به جمع کاربران ما بپیوندید</p>
+        </div>
+
         {% if error %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+            <div class="bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-sm mb-6 text-center">
                 {{ error }}
             </div>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('user_register') }}">
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">ایمیل</label>
-                <input type="email" name="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <form method="POST" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">ایمیل</label>
+                <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-sm transition">
             </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">رمز عبور</label>
-                <input type="password" name="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رمز عبور</label>
+                <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-sm transition">
             </div>
-            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">ثبت‌نام</button>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm">
+                ثبت‌نام
+            </button>
         </form>
-        
-        <p class="mt-4 text-center text-sm text-gray-600">
-            حساب کاربری دارید؟ <a href="{{ url_for('user_login') }}" class="text-blue-500 hover:underline">وارد شوید</a>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            قبلاً ثبت‌نام کرده‌اید؟ <a href="{{ url_for('user_login') }}" class="text-blue-600 font-semibold hover:underline">وارد شوید</a>
         </p>
     </div>
+
 </body>
 </html>
