@@ -5,9 +5,9 @@ from supabase import create_client, Client
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # کلید امنیتی برای مدیریت Session
 
-# اتصال به دیتابیس Supabase (مقادیر پروژه خود را جایگزین کنید)
-SUPABASE_URL = "https://your-project.supabase.co"
-SUPABASE_KEY = "your-supabase-anon-key"
+# اتصال به دیتابیس Supabase از طریق Environment Variables (امن و استاندارد برای Render)
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://your-project.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "your-supabase-anon-key")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ----------------------------------------------------
