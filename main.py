@@ -1,4 +1,3 @@
-# main.py
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from supabase import create_client, Client
