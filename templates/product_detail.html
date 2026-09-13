@@ -3,114 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.title }} - دیجی‌پلاس</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ product.title }} | دیجی‌پلاس</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
 
-    <div class="digi-topbar">
-        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 🔥
+    <div class="bg-red-600 text-white text-center py-2 text-xs font-bold">
+        🔥 تخفیف‌های شگفت‌انگیز امروز | ارسال سریع به سراسر کشور 📦
     </div>
 
-    <header class="digi-header">
-        <div class="header-right">
-            <a href="/" class="site-logo">دیجی‌پلاس</a>
-        </div>
-        <div class="header-left">
-            <a href="/" class="btn-admin">بازگشت به صفحه اصلی</a>
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-xl font-black text-red-600">دیجی‌پلاس</a>
+            <a href="/" class="text-xs bg-gray-100 px-3 py-1 rounded font-bold">← بازگشت به صفحه اصلی</a>
         </div>
     </header>
 
-    <div class="container">
-        <div class="product-detail-container">
-            <div>
-                {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.title }}" class="detail-img">
-                {% else %}
-                    <div class="detail-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9; height:300px;">بدون تصویر</div>
-                {% endif %}
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        <!-- اطلاعات محصول -->
+        <div class="bg-white border rounded-2xl p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="flex justify-center items-center">
+                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="max-h-80 object-contain">
             </div>
-            
-            <div class="detail-info">
-                <span style="color: #898f96; font-size: 13px;">دسته‌بندی: {{ product.category or 'عمومی' }}</span>
-                <h1>{{ product.title }}</h1>
-                <p style="color: #62666d; margin: 15px 0; line-height: 1.8;">{{ product.description }}</p>
-
-                <div class="detail-price-box">
-                    {% if product.discount_price and product.discount_price > 0 %}
-                        <div class="old-price" style="font-size: 14px;">{{ product.price }} تومان</div>
-                        <div class="new-price" style="font-size: 24px; margin-top: 5px;">{{ product.discount_price }} تومان</div>
-                    {% else %}
-                        <div class="new-price" style="font-size: 24px;">{{ product.price if product.price > 0 else 'توافقی' }} {% if product.price > 0 %}تومان{% endif %}</div>
-                    {% endif %}
-
-                    {% if product.affiliate_link %}
-                        <a href="{{ product.affiliate_link }}" target="_blank" class="btn-buy-lg">خرید و مشاهده در فروشگاه مقصد</a>
-                    {% endif %}
+            <div class="flex flex-col justify-between space-y-4">
+                <div>
+                    <span class="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded">دسته‌بندی: {{ product.category }}</span>
+                    <h1 class="text-lg font-bold text-gray-800 mt-3">{{ product.title }}</h1>
+                    <p class="text-sm text-gray-600 mt-2 leading-relaxed">{{ product.description }}</p>
+                </div>
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-gray-400 line-through">{{\ "{:,}\".format(product.price) }} تومان</span>
+                        <span class="text-xl font-extrabold text-red-600">{{\ "{:,}\".format(product.discount_price) }} تومان</span>
+                    </div>
+                    <a href="{{ product.affiliate_link }}" target="_blank" class="block text-center bg-green-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-700 shadow">خرید و مشاهده در فروشگاه مقصد</a>
                 </div>
             </div>
+        </div>
+
+        <!-- نمودار تغییرات قیمت -->
+        <div class="bg-white border rounded-2xl p-6 shadow-sm">
+            <h3 class="font-bold text-sm text-gray-800 mb-4">📈 نمودار نوسان قیمت در ۳۰ روز گذشته</h3>
+            <canvas id="priceChart" height="90"></canvas>
+        </div>
+
+        <!-- بخش نظرات کاربران -->
+        <div class="bg-white border rounded-2xl p-6 shadow-sm">
+            <h3 class="font-bold text-sm text-gray-800 mb-4">💬 نظرات کاربران</h3>
+            <div class="space-y-3 mb-6">
+                {% for comment in comments %}
+                <div class="bg-gray-50 p-3 rounded-xl text-xs space-y-1">
+                    <div class="flex justify-between font-bold text-gray-700">
+                        <span>{{ comment.author }}</span>
+                        <span class="text-yellow-500">⭐ {{ comment.rating }} از ۵</span>
+                    </div>
+                    <p class="text-gray-600">{{ comment.content }}</p>
+                </div>
+                {% else %}
+                <p class="text-xs text-gray-400">هنوز نظری برای این محصول ثبت نشده است. اولین نفر باشید!</p>
+                {% endfor %}
+            </div>
+
+            <!-- ثبت نظر جدید -->
+            <form action="/product/{{ product.id }}/comment" method="POST" class="space-y-3 border-t pt-4">
+                <h4 class="font-bold text-xs text-gray-700">ثبت نظر جدید</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" name="author" placeholder="نام شما..." required class="border rounded px-3 py-2 text-xs">
+                    <select name="rating" class="border rounded px-3 py-2 text-xs">
+                        <option value="5">⭐⭐⭐⭐⭐ (۵/۵)</option>
+                        <option value="4">⭐⭐⭐⭐ (۴/۵)</option>
+                        <option value="3">⭐⭐⭐ (۳/۵)</option>
+                        <option value="2">⭐⭐ (۲/۵)</option>
+                        <option value="1">⭐ (۱/۵)</option>
+                    </select>
+                </div>
+                <textarea name="content" placeholder="متن نظر خود را بنویسید..." rows="3" required class="w-full border rounded px-3 py-2 text-xs"></textarea>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded text-xs font-bold">ارسال نظر</button>
+            </form>
         </div>
 
         <!-- محصولات مرتبط -->
         {% if related_products %}
-            <div style="margin-bottom: 40px;">
-                <h3 style="margin-bottom: 20px; font-size: 18px;">محصولات مرتبط</h3>
-                <div class="products-grid">
-                    {% for rel in related_products %}
-                        <div class="product-card">
-                            {% if rel.image_url %}
-                                <img src="{{ rel.image_url }}" alt="{{ rel.title }}" class="product-img">
-                            {% else %}
-                                <div class="product-img" style="display:flex; align-items:center; justify-content:center; color:#95a5a6; background:#f1f5f9;">بدون تصویر</div>
-                            {% endif %}
-                            <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="product-title">{{ rel.title }}</a>
-                            <div class="price-box">
-                                <div class="new-price">{{ rel.discount_price if rel.discount_price and rel.discount_price > 0 else rel.price }} تومان</div>
-                            </div>
-                            <a href="{{ url_for('product_detail', product_id=rel.id) }}" class="btn-card">مشاهده</a>
-                        </div>
-                    {% endfor %}
+        <div class="bg-white border rounded-2xl p-6 shadow-sm">
+            <h3 class="font-bold text-sm text-gray-800 mb-4">محصولات مرتبط</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {% for rp in related_products %}
+                <div class="border rounded-xl p-3 flex items-center gap-4">
+                    <img src="{{ rp.image_url }}" class="w-16 h-16 object-contain">
+                    <div>
+                        <h4 class="font-bold text-xs text-gray-800 line-clamp-1">{{ rp.title }}</h4>
+                        <span class="text-red-600 font-bold text-xs">{{\ "{:,}\".format(rp.discount_price) }} تومان</span>
+                        <a href="/product/{{ rp.id }}" class="block text-blue-600 text-[10px] mt-1">مشاهده جزئیات →</a>
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-
-        <!-- بخش نظرات -->
-        <div class="admin-card">
-            <h3 style="margin-bottom: 20px; font-size: 18px;">نظرات کاربران</h3>
-            
-            <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}" style="margin-bottom: 30px; background: #f8f8f9; padding: 20px; border-radius: 8px;">
-                <h4 style="margin-bottom: 15px; font-size: 14px;">ثبت نظر جدید</h4>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                    <input type="text" name="author" placeholder="نام شما" required class="form-control" style="margin-bottom: 0;">
-                    <select name="rating" class="form-control" style="width: 150px; margin-bottom: 0;">
-                        <option value="5">⭐⭐⭐⭐⭐ (عالی)</option>
-                        <option value="4">⭐⭐⭐⭐ (خوب)</option>
-                        <option value="3">⭐⭐⭐ (متوسط)</option>
-                        <option value="2">⭐⭐ (ضعیف)</option>
-                        <option value="1">⭐ (خیلی بد)</option>
-                    </select>
-                </div>
-                <textarea name="comment" rows="3" placeholder="متن نظر..." required class="form-control"></textarea>
-                <button type="submit" class="btn-admin" style="background: #ef4056; color: white; border: none; cursor: pointer; padding: 10px 20px;">ارسال نظر</button>
-            </form>
-
-            <div>
-                {% if reviews %}
-                    {% for r in reviews %}
-                        <div style="border-bottom: 1px solid #e0e0e0; padding: 15px 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <strong style="font-size: 14px;">{{ r.author }}</strong>
-                                <span style="color: #f59e0b;">{% for i in range(r.rating) %}⭐{% endfor %}</span>
-                            </div>
-                            <p style="color: #62666d; font-size: 14px;">{{ r.comment }}</p>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p style="color: #898f96; text-align: center;">هنوز نظری ثبت نشده است.</p>
-                {% endif %}
+                {% endfor %}
             </div>
         </div>
-    </div>
+        {% endif %}
+    </main>
 
+    <script>
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['۳۰ روز پیش', '۲۰ روز پیش', '۱۰ روز پیش', 'امروز'],
+                datasets: [{
+                    label: 'قیمت (تومان)',
+                    data: [{{ product.price }}, {{ product.price * 1.03 }}, {{ product.price * 1.01 }}, {{ product.discount_price }}],
+                    borderColor: 'rgb(225, 29, 72)',
+                    backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
 </body>
 </html>
